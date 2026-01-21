@@ -1,0 +1,154 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: url('images/vcbackground.jpg') no-repeat center center/cover;
+    color: #fff;
+}
+
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: rgba(50, 50, 50, 0.8); /* Semi-transparent background */
+    border-radius: 20px; /* Rounded corners */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); /* Floating shadow effect */
+    max-width: 400px;
+    width: 100%;
+    padding: 40px;
+    margin: auto;
+}
+
+.login-form {
+    text-align: center;
+    color: #fff;
+}
+
+.login-form h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.login-form h2 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    color: #ccc;
+}
+
+.login-form p {
+    color: #ccc; /* Adjusted text color for better readability */
+    margin-bottom: 20px;
+}
+
+.login-form input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+.login-form .forgot-password {
+    display: block;
+    text-align: right;
+    color: #4e54c8;
+    text-decoration: none;
+    margin-bottom: 20px;
+}
+
+.login-button {
+    width: 100%;
+    padding: 10px;
+    background-color: #4e54c8; /* Your color scheme */
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    margin-bottom: 20px;
+}
+
+.login-button:hover {
+    background-color: #3b3f8f; /* Slightly darker hover effect */
+}
+
+.social-login {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.social-login button {
+    flex: 1;
+    margin: 0 5px;
+    padding: 10px;
+    background-color: #fff;
+    color: #000;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.social-login button img {
+    width: 20px;
+    margin-right: 10px;
+}
+
+.social-login button:hover {
+    background-color: #f5f5f5;
+}
+
+.login-image {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #1a2a6c, #4e54c8, #8f94fb); /* Gradient background */
+    color: #fff;
+    text-align: center;
+    padding: 20px;
+}
+
+.slogan {
+    transform: rotate(-10deg); /* Slightly angled text */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.slogan h2 {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #ffffff;
+    margin-bottom: 10px;
+    font-family: 'Arial', sans-serif; /* Updated font to match the design */
+}
+
+.slogan p {
+    font-size: 1.2rem;
+    color: #e0e0e0;
+    font-style: italic;
+    font-family: 'Arial', sans-serif; /* Updated font to match the design */
+}
+
+.vc-logo {
+    max-width: 150px;
+    margin-bottom: 20px;
+}
+
+/* Removed the profile picture upload field styling */
+.file-upload-label, .file-upload {
+    display: none;
+}
