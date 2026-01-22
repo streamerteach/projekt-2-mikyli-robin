@@ -13,7 +13,7 @@
 <body style="background-image: url('images/VCbackground.png');">
     <div class="login-container">
         <div class="login-form">
-            <img src="images/VCLogo.png" alt="VerifiedCircle Logo" class="vc-logo"> <!-- Replaced 'Your Logo' text with VCLogo image -->
+            <img src="images/VCLogoTransparent.png" alt="VerifiedCircle Logo" class="vc-logo"> <!-- Replaced 'Your Logo' text with VCLogo image -->
             <h2>Login</h2>
             <form action="login.php" method="POST">
                 <input type="email" name="email" placeholder="Enter your email" required>

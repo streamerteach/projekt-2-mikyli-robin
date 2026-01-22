@@ -9,7 +9,7 @@
 <body style="background-image: url('images/VCbackground.png');">
     <div class="login-container">
         <div class="login-form">
-            <img src="images/VCLogo.png" alt="VerifiedCircle Logo" class="vc-logo">
+            <img src="images/VCLogoTransparent.png" alt="VerifiedCircle Logo" class="vc-logo">
             <h2>Register</h2>
             <form action="register_process.php" method="POST">
                 <input type="text" name="fullname" placeholder="Full Name" required>
