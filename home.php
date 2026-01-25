@@ -6,25 +6,26 @@ if (empty($_SESSION["logged_in"])) {
 }
 
 $file = __DIR__ . "/users.json";
-$users = json_decode(file_get_contents($file), true);
-$email = $_SESSION["email"];
+$users = file_exists($file) ? json_decode(file_get_contents($file), true) : [];
+if (!is_array($users)) $users = [];
+
+$email = $_SESSION["email"] ?? "";
 
 if (empty($users[$email]["onboarding_complete"])) {
-  header("Location: setup.php");
+  header("Location: setup.php"); // changed from onboarding.php to setup.php
   exit;
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="styles.css">
   <title>VerifiedCircle</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 
-<body>
+<body id="home">
 
   <header>
     <div class="avatar" aria-label="Profile"></div>
@@ -37,14 +38,21 @@ if (empty($users[$email]["onboarding_complete"])) {
         <a href="#">Discover</a>
       </nav>
     </div>
+    
+    <div class="burger" aria-label="Menu" id="burgerBtn">
+  <div class="burgerLines">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
 
-    <div class="burger" aria-label="Menu">
-      <div class="burgerLines">
-        <span></span>
-        <span></span>
-        <span></span>
-      </div>
-    </div>
+<!-- Hamburger dropdown -->
+<div class="menuDropdown" id="menuDropdown" aria-label="User menu">
+  <a class="menuItem" href="setup.php">Setup</a>
+  <a class="menuItem logout" href="logout.php">Logout</a>
+</div>
+
   </header>
 
   <main>
@@ -74,6 +82,20 @@ if (empty($users[$email]["onboarding_complete"])) {
     <button class="btn btnSkip" type="button">SKIP</button>
     <button class="btn btnConnect" type="button">CONNECT</button>
   </div>
+
+  <script>
+  const burgerBtn = document.getElementById("burgerBtn");
+  const menu = document.getElementById("menuDropdown");
+
+  burgerBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    menu.classList.toggle("open");
+  });
+
+  document.addEventListener("click", () => {
+    menu.classList.remove("open");
+  });
+</script>
 
 </body>
 </html>

@@ -152,8 +152,7 @@ body {
 .file-upload-label, .file-upload {
     display: none;
 }
-
- /* =========================
+/* =========================
    VerifiedCircle - HOME UI
    ========================= */
 
@@ -179,18 +178,31 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-body{
+/* Make sure the page background is black */
+html{
+  background: var(--bg);
+}
+
+/* ===== HOME PAGE ROOT ===== */
+body#home{
   background: var(--bg);
   color: var(--white);
   min-height: 100vh;
+  width: 100%;
   display: flex;
   flex-direction: column;
+
+  /* ensure we never inherit login centering */
+  justify-content: flex-start;
+  align-items: stretch;
+  height: auto;
 }
 
-/* ====== HEADER ====== */
-header{
+/* ====== HEADER (HOME) ====== */
+body#home header{
   background: var(--headerBlue);
   height: 90px;
+  width: 100%;
   display: grid;
   grid-template-columns: 90px 1fr 90px;
   align-items: center;
@@ -198,7 +210,7 @@ header{
   position: relative;
 }
 
-.avatar{
+body#home .avatar{
   width: 62px;
   height: 62px;
   background: var(--grayLight);
@@ -206,18 +218,18 @@ header{
   justify-self: start;
 }
 
-.titleWrap{
+body#home .titleWrap{
   text-align: center;
   line-height: 1;
 }
 
-.title{
+body#home .title{
   font-size: 40px;
   font-weight: 700;
   letter-spacing: 1px;
 }
 
-.nav{
+body#home .nav{
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
@@ -229,19 +241,19 @@ header{
   text-transform: uppercase;
 }
 
-.nav a{
+body#home .nav a{
   color: var(--white);
   text-decoration: none;
   opacity: 0.95;
 }
 
-.nav a.active{
+body#home .nav a.active{
   text-decoration: underline;
   text-underline-offset: 8px;
   text-decoration-thickness: 3px;
 }
 
-.burger{
+body#home .burger{
   justify-self: end;
   width: 44px;
   height: 44px;
@@ -251,7 +263,7 @@ header{
   user-select: none;
 }
 
-.burgerLines{
+body#home .burgerLines{
   width: 34px;
   height: 22px;
   display: flex;
@@ -259,7 +271,7 @@ header{
   justify-content: space-between;
 }
 
-.burgerLines span{
+body#home .burgerLines span{
   height: 4px;
   background: var(--white);
   border-radius: 999px;
@@ -267,16 +279,53 @@ header{
   opacity: 0.9;
 }
 
+/* ===== Hamburger dropdown ===== */
+body#home .menuDropdown{
+  position: absolute;
+  top: 78px;          /* below header title area */
+  right: 16px;
+  background: #0b2f7a;  /* slightly darker than header */
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 14px;
+  padding: 10px;
+  width: 180px;
+  display: none;      /* hidden by default */
+  z-index: 9999;
+  box-shadow: 0 16px 30px rgba(0,0,0,0.35);
+}
+
+body#home .menuDropdown.open{
+  display: block;
+}
+
+body#home .menuItem{
+  display: block;
+  padding: 10px 12px;
+  border-radius: 10px;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+body#home .menuItem:hover{
+  background: rgba(255,255,255,0.10);
+}
+
+body#home .menuItem.logout{
+  color: #ffb3b3;
+}
+
 /* ====== MAIN CONTENT ====== */
-main{
+body#home main{
   flex: 1;
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 40px 20px 80px;
 }
 
-.layout{
+body#home .layout{
   width: min(1100px, 100%);
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -285,7 +334,7 @@ main{
   justify-content: center;
 }
 
-.panel{
+body#home .panel{
   background: var(--panelBlue);
   border-radius: var(--radiusBig);
   padding: 18px;
@@ -293,14 +342,14 @@ main{
 }
 
 /* LEFT BIG CARD */
-.panelLeft{
+body#home .panelLeft{
   height: 520px;
   display: flex;
   align-items: stretch;
   justify-content: center;
 }
 
-.profileCard{
+body#home .profileCard{
   width: 100%;
   background: var(--gray);
   border-radius: var(--radiusMid);
@@ -309,7 +358,7 @@ main{
   border: 3px solid rgba(255,255,255,0.15);
 }
 
-.dotsRow{
+body#home .dotsRow{
   position: absolute;
   left: 20px;
   right: 20px;
@@ -319,7 +368,7 @@ main{
   justify-content: center;
 }
 
-.dotsRow span{
+body#home .dotsRow span{
   width: 34px;
   height: 10px;
   background: var(--grayLight);
@@ -328,7 +377,7 @@ main{
 }
 
 /* RIGHT STACK */
-.panelRight{
+body#home .panelRight{
   height: 520px;
   display: grid;
   grid-template-rows: 1.35fr 0.55fr 0.45fr 0.55fr;
@@ -336,14 +385,14 @@ main{
   padding: 18px;
 }
 
-.box{
+body#home .box{
   background: var(--gray);
   border-radius: var(--radiusMid);
   border: 3px solid rgba(255,255,255,0.12);
 }
 
 /* ====== BOTTOM BUTTONS ====== */
-.actions{
+body#home .actions{
   position: fixed;
   left: 0;
   right: 0;
@@ -352,9 +401,10 @@ main{
   justify-content: center;
   gap: 70px;
   pointer-events: none;
+  width: 100%;
 }
 
-.btn{
+body#home .btn{
   pointer-events: auto;
   border: none;
   padding: 14px 48px;
@@ -367,28 +417,31 @@ main{
   transition: transform 0.08s ease, filter 0.08s ease;
 }
 
-.btn:active{
+body#home .btn:active{
   transform: translateY(2px);
   filter: brightness(0.95);
 }
 
-.btnSkip{
+body#home .btnSkip{
   background: var(--btnSkip);
   color: #000;
 }
 
-.btnConnect{
+body#home .btnConnect{
   background: var(--btnConnect);
   color: #000;
 }
 
 /* ====== RESPONSIVE ====== */
 @media (max-width: 900px){
-  header{ height: 100px; }
-  .title{ font-size: 34px; }
-  .nav{ gap: 40px; font-size: 18px; }
-  .layout{ grid-template-columns: 1fr; gap: 30px; }
-  .panelLeft, .panelRight{ height: 460px; }
-  .actions{ gap: 24px; bottom: 18px; }
-  .btn{ padding: 12px 34px; }
+  body#home header{ height: 100px; }
+  body#home .title{ font-size: 34px; }
+  body#home .nav{ gap: 40px; font-size: 18px; }
+  body#home .layout{ grid-template-columns: 1fr; gap: 30px; }
+  body#home .panel{ width: 100%; max-width: 520px; justify-self: center; }
+  body#home .panelLeft, body#home .panelRight{ height: auto; min-height: 320px; }
+  body#home .profileCard{ min-height: 420px; }
+  body#home .panelRight{ grid-template-rows: 220px 90px 70px 90px; }
+  body#home .actions{ gap: 24px; bottom: 18px; }
+  body#home .btn{ padding: 12px 34px; }
 }
