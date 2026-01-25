@@ -1,5 +1,37 @@
 <?php
-    include 'handy_methods.php';
+session_start();
+include 'handy_methods.php';
+
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+
+    $email = $_POST["email"] ?? "";
+    $password = $_POST["password"] ?? "";
+
+if (password_verify($password, $hashedPassword)) {
+
+    $_SESSION["logged_in"] = true;
+    $_SESSION["email"] = $email; // store whatever email user typed
+
+    header("Location: home.php");
+    exit;
+
+} else {
+    $error = "Wrong password.";
+}
+
+    // Check login
+    if (isset($users[$email]) && password_verify($password, $users[$email])) {
+
+        $_SESSION["logged_in"] = true;
+        $_SESSION["email"] = $email;
+
+        header("Location: home.php");
+        exit;
+
+    } else {
+        $error = "Wrong email or password.";
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -15,28 +47,15 @@
         <div class="login-form">
             <img src="images/VCLogoTransparent.png" alt="VerifiedCircle Logo" class="vc-logo"> <!-- Replaced 'Your Logo' text with VCLogo image -->
             <h2>Login</h2>
-            <form action="login.php" method="POST">
+            <form action="" method="POST">
                 <input type="email" name="email" placeholder="Enter your email" required>
                 <input type="password" name="password" placeholder="Password" required>
                 <a href="#" class="forgot-password">Forgot Password?</a>
-                <button type="submit" class="login-button">Sign in</button>
+                <button type="submit" class="login-button">Log in</button>
             </form>
-            <div class="social-login">
-                <button class="google-login">
-                    <img src="images/google-logo.png" alt="Google Logo">
-                    Google
-                </button>
-                <button class="facebook-login">
-                    <img src="images/facebook-logo.png" alt="Facebook Logo">
-                    Facebook
-                </button>
-                <button class="apple-login">
-                    <img src="images/apple-logo.png" alt="Apple Logo">
-                    Apple
-                </button>
-            </div>
             <p>Don’t have an account? <a href="register.php">Register for free</a></p>
         </div>
     </div>
 </body>
 </html>
+
