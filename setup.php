@@ -68,7 +68,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 
     // Otherwise reload to show next step
-    header("Location: onboarding.php");
+    header("Location: setup.php");
     exit;
   }
 }

@@ -10,7 +10,7 @@ $users = json_decode(file_get_contents($file), true);
 $email = $_SESSION["email"];
 
 if (empty($users[$email]["onboarding_complete"])) {
-  header("Location: onboarding.php");
+  header("Location: setup.php");
   exit;
 }
 ?>
@@ -20,32 +20,8 @@ if (empty($users[$email]["onboarding_complete"])) {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="styles.css">
   <title>VerifiedCircle</title>
-
-  <style>
-    :root{
-      --bg: #000000;
-      --headerBlue: #0a3ea8;
-      --panelBlue: #0a3ea8;
-      --panelBlueDark: #062f7a;
-      --gray: #6e6e6e;
-      --grayLight: #d9d9d9;
-      --white: #ffffff;
-
-      --btnSkip: #ff5a5a;
-      --btnConnect: #6cff6c;
-
-      --radiusBig: 28px;
-      --radiusMid: 20px;
-    }
-
-    *{
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: Arial, Helvetica, sans-serif;
-    }
-  </style>
 </head>
 
 <body>

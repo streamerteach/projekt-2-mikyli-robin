@@ -2,30 +2,33 @@
 session_start();
 include 'handy_methods.php';
 
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
-
-    $email = $_POST["email"] ?? "";
-    $password = $_POST["password"] ?? "";
-
-if (password_verify($password, $hashedPassword)) {
-
-    $_SESSION["logged_in"] = true;
-    $_SESSION["email"] = $email; // store whatever email user typed
-
-    header("Location: home.php");
-    exit;
-
-} else {
-    $error = "Wrong password.";
+$file = __DIR__ . "/users.json";
+if (!file_exists($file)) {
+    file_put_contents($file, "{}");
 }
 
-    // Check login
-    if (isset($users[$email]) && password_verify($password, $users[$email])) {
+$error = "";
+
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+
+    $email = trim($_POST["email"] ?? "");
+    $password = $_POST["password"] ?? "";
+
+    $users = json_decode(file_get_contents($file), true);
+    if (!is_array($users)) $users = [];
+
+    // user must exist and password must match the stored hash
+    if (isset($users[$email]) && password_verify($password, $users[$email]["password"])) {
 
         $_SESSION["logged_in"] = true;
         $_SESSION["email"] = $email;
 
-        header("Location: home.php");
+        // First-time setup routing
+        if (empty($users[$email]["onboarding_complete"])) {
+            header("Location: setup.php");
+        } else {
+            header("Location: home.php");
+        }
         exit;
 
     } else {
