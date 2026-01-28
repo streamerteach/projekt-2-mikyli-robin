@@ -15,6 +15,7 @@ if (empty($users[$email]["onboarding_complete"])) {
   header("Location: setup.php"); // changed from onboarding.php to setup.php
   exit;
 }
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -68,6 +69,37 @@ if (empty($users[$email]["onboarding_complete"])) {
   document.addEventListener("click", () => {
     menu.classList.remove("open");
   });
+</script>
+
+<div id="countdown">
+  <h2>Time to find your valentine's date</h2>
+  <p id="timer"></p>
+</div>
+
+<script>
+  // Sets the date for Valentine's Day
+  const valentineDate = new Date(new Date().getFullYear(), 1, 14, 0, 0, 0).getTime();
+
+  // Updates the countdown every second
+  const countdownInterval = setInterval(() => {
+    const now = new Date().getTime();
+    const timeLeft = valentineDate - now;
+
+    // Calculates the days, hours, minutes, and seconds
+    const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+    // Display the result
+    document.getElementById("timer").innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+
+    // When the countdown is over the message is displayed
+    if (timeLeft < 0) {
+      clearInterval(countdownInterval);
+      document.getElementById("timer").innerHTML = "Hopefully you found someone special!";
+    }
+  }, 1000);
 </script>
 
 </body>
