@@ -49,13 +49,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Save user
     $users[$email] = [
         "fullname" => $fullname,
-        "password" => $hashed_password,
         "birthdate" => $birthdate,
-        "created_at" => date("c")
+        "password" => $hashed_password,
+        "onboarding_complete" => false
     ];
 
     file_put_contents($file, json_encode($users, JSON_PRETTY_PRINT));
 
+    // Redirect to index.php with a success message
     echo "<script>alert('Registration successful!'); window.location.href='index.php';</script>";
     exit;
 }

@@ -6,7 +6,7 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background: url('images/vcbackground.jpg') no-repeat center center/cover;
+    background: url('images/VCbackground.png') no-repeat center center/cover;
     color: #fff;
 }
 
@@ -66,7 +66,7 @@ body {
 .login-button {
     width: 100%;
     padding: 10px;
-    background-color: #4e54c8; /* Your color scheme */
+    background-color: #4e54c8; 
     color: #fff;
     border: none;
     border-radius: 5px;
@@ -76,7 +76,7 @@ body {
 }
 
 .login-button:hover {
-    background-color: #3b3f8f; /* Slightly darker hover effect */
+    background-color: #3b3f8f; /* hover effect */
 }
 
 .social-login {
@@ -152,9 +152,28 @@ body {
 .file-upload-label, .file-upload {
     display: none;
 }
-/* =========================
-   VerifiedCircle - HOME UI
-   ========================= */
+
+.profile-box {
+    border: 1px solid #ccc;
+    padding: 20px;
+    margin: 20px auto;
+    max-width: 600px;
+    background-color: #a72727;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.profile-box h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.profile-box p {
+    font-size: 16px;
+    margin: 10px 0;
+}
+
+/* VerifiedCircle - HOME UI */
 
 :root{
   --bg: #000000;

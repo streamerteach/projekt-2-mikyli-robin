@@ -16,7 +16,12 @@ if (empty($users[$email]["onboarding_complete"])) {
   exit;
 }
 
+// Fetchar userns data
+$user = $users[$email];
+$fullname = $user['fullname'] ?? 'N/A';
+$birthdate = $user['birthdate'] ?? 'N/A';
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -101,6 +106,12 @@ if (empty($users[$email]["onboarding_complete"])) {
     }
   }, 1000);
 </script>
+
+<div class="profile-box">
+  <h2>Profile Information</h2>
+  <p><strong>Full Name:</strong> <?php echo htmlspecialchars($fullname); ?></p>
+  <p><strong>Date of Birth:</strong> <?php echo htmlspecialchars($birthdate); ?></p>
+</div>
 
 </body>
 </html>
