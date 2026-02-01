@@ -12,7 +12,7 @@ if (!is_array($users)) $users = [];
 $email = $_SESSION["email"] ?? "";
 
 if (empty($users[$email]["onboarding_complete"])) {
-  header("Location: setup.php"); // changed from onboarding.php to setup.php
+  header("Location: setup.php"); 
   exit;
 }
 
@@ -20,6 +20,13 @@ if (empty($users[$email]["onboarding_complete"])) {
 $user = $users[$email];
 $fullname = $user['fullname'] ?? 'N/A';
 $birthdate = $user['birthdate'] ?? 'N/A';
+$profile = $user['profile']['profile_picture'] ?? 'images/default-profile.png';
+$city = $user['profile']['city'] ?? 'N/A';
+$lookingFor = $user['preferences']['looking_for'] ?? 'N/A';
+$ageMin = $user['preferences']['age_min'] ?? 'N/A';
+$ageMax = $user['preferences']['age_max'] ?? 'N/A';
+$bio = $user['profile']['bio'] ?? 'N/A';
+
 ?>
 
 <!DOCTYPE html>
@@ -109,8 +116,13 @@ $birthdate = $user['birthdate'] ?? 'N/A';
 
 <div class="profile-box">
   <h2>Profile Information</h2>
+  <img src="<?php echo htmlspecialchars($profile); ?>" alt="Profile Picture" style="width:150px;height:150px;border-radius:50%;"><br>
   <p><strong>Full Name:</strong> <?php echo htmlspecialchars($fullname); ?></p>
   <p><strong>Date of Birth:</strong> <?php echo htmlspecialchars($birthdate); ?></p>
+  <p><strong>City:</strong> <?php echo htmlspecialchars($city); ?></p>
+  <p><strong>Looking for:</strong> <?php echo htmlspecialchars($lookingFor); ?></p>
+  <p><strong>Age range:</strong> <?php echo htmlspecialchars($ageMin); ?> to <?php echo htmlspecialchars($ageMax); ?></p>
+  <p><strong>Short bio:</strong> <?php echo nl2br(htmlspecialchars($bio)); ?></p>
 </div>
 
 </body>

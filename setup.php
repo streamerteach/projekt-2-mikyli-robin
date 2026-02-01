@@ -52,10 +52,26 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
   if ($step === 3 && $error === "") {
     $bio = trim($_POST["bio"] ?? "");
     $users[$email]["profile"]["bio"] = $bio;
+    
+    // Handle profile picture upload
+    if (isset($_FILES['profile_picture']) && $_FILES['profile_picture']['error'] === UPLOAD_ERR_OK) {
+        $uploadDir = __DIR__ . '/images/';
+        $fileName = basename($_FILES['profile_picture']['name']);
+        $targetFile = $uploadDir . $fileName;
+
+        // Move uploaded file to the images directory
+        if (move_uploaded_file($_FILES['profile_picture']['tmp_name'], $targetFile)) {
+            $users[$email]['profile']['profile_picture'] = 'images/' . $fileName;
+        } else {
+            $error = "Failed to upload profile picture.";
+        }
+    }
 
     // Mark complete
-    $users[$email]["onboarding_complete"] = true;
-    $users[$email]["onboarding_step"] = 0;
+    if ($error === "") {
+        $users[$email]["onboarding_complete"] = true;
+        $users[$email]["onboarding_step"] = 0;
+    }
   }
 
   if ($error === "") {
@@ -117,8 +133,10 @@ $step = (int)($user["onboarding_step"] ?? 1);
     </form>
 
   <?php elseif ($step === 3): ?>
-    <form method="POST">
+    <form method="POST" enctype="multipart/form-data">
       <textarea name="bio" placeholder="Short bio" rows="5" cols="40"></textarea><br><br>
+      <label for="profile_picture">Upload Profile Picture:</label><br>
+      <input type="file" name="profile_picture" id="profile_picture" accept="image/*"><br><br>
       <button type="submit">Finish</button>
     </form>
   <?php endif; ?>
