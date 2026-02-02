@@ -21,7 +21,6 @@ include_once __DIR__ . "/visitor_counter.php";
 
 // Hanterar besök och visar antal unika besökare
 $visitorData = handleVisitor($email, $users);
-echo "Antal unika besökare: " . $visitorData['unique_visitors'];
 
 /* ===== pick ONE candidate (keep it minimal) ===== */
 $candidateEmail = null;
@@ -167,6 +166,14 @@ foreach ($users as $uEmail => $uData) {
     menu.classList.remove("open");
   });
 </script>
+
+<footer>
+  <p>&copy; <?php echo date("Y"); ?> Dating Site. All rights reserved.</p>
+    <?php
+    $visitorData = handleVisitor($email, $users);
+    echo "Antal unika besökare: " . $visitorData['unique_visitors'];
+    ?>
+</footer>
 
 </body>
 </html>

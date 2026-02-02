@@ -468,6 +468,19 @@ body#home .btnConnect{
   color: #000;
 }
 
+/*footer style*/
+footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    background-color: #0000009f; 
+    padding: 10px; 
+    z-index: 1000; 
+    color: #ffffffe5; 
+}
+
 /* ====== RESPONSIVE ====== */
 @media (max-width: 900px){
   body#home header{ height: 100px; }
