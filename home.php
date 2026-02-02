@@ -16,6 +16,13 @@ if (empty($users[$email]["onboarding_complete"])) {
   exit;
 }
 
+// Inkluderar besöksräknaren
+include_once __DIR__ . "/visitor_counter.php";
+
+// Hanterar besök och visar antal unika besökare
+$visitorData = handleVisitor($email, $users);
+echo "Antal unika besökare: " . $visitorData['unique_visitors'];
+
 /* ===== pick ONE candidate (keep it minimal) ===== */
 $candidateEmail = null;
 $candidate = null;

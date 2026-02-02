@@ -15,6 +15,12 @@ if (empty($users[$email]["onboarding_complete"])) {
   header("Location: setup.php"); 
   exit;
 }
+// Inkluderar besöksräknaren
+include_once __DIR__ . "/visitor_counter.php";
+
+// Hanterar besök och visar välkomstmeddelande
+$visitorData = handleVisitor($email, $users);
+echo "Välkommen, " . $visitorData['full_name'] . "! Ditt senaste besök var: " . $visitorData['last_visit'] . ".";
 
 // Fetchar userns data
 $user = $users[$email];
@@ -38,7 +44,7 @@ $bio = $user['profile']['bio'] ?? 'N/A';
   <link rel="stylesheet" href="styles.css">
 </head>
 
-<body id="home">
+<body id="home" style = "background-image: url('images/VCbackground.png');">
 
   <header>
     <div class="avatar" aria-label="Profile"></div>
@@ -84,7 +90,7 @@ $bio = $user['profile']['bio'] ?? 'N/A';
 </script>
 
 <div id="countdown">
-  <h2>Time to find your valentine's date</h2>
+  <h2>Time to find your valentine's date:</h2>
   <p id="timer"></p>
 </div>
 
