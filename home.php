@@ -78,6 +78,14 @@ foreach ($users as $uEmail => $uData) {
   </header>
 
   <main>
+    <!-- COUNTDOWN SECTION -->
+    <div class="countdown-wrapper">
+      <h3 class="countdown-title">When is your date?</h3>
+      <input type="text" id="dateInput" class="countdown-input" placeholder="DD-MM-YYYY">
+      <button id="countdownBtn" class="countdown-button">Time until your date</button>
+      <div id="countdownDisplay" class="countdown-display"></div>
+    </div>
+
     <div class="layout">
 
       <!-- LEFT BIG PANEL -->
@@ -164,6 +172,63 @@ foreach ($users as $uEmail => $uData) {
 
   document.addEventListener("click", () => {
     menu.classList.remove("open");
+  });
+
+  // Countdown functionaliteten
+  let countdownInterval = null;
+
+  document.getElementById('countdownBtn').addEventListener('click', function() {
+    const dateInput = document.getElementById('dateInput').value;
+    const display = document.getElementById('countdownDisplay');
+    
+    // Validerar formatet DD-MM-YYYY
+    const datePattern = /^(\d{2})-(\d{2})-(\d{4})$/;
+    const match = dateInput.match(datePattern);
+    
+    if (!match) {
+      display.textContent = 'Ogiltigt format! Använd DD-MM-YYYY';
+      display.style.color = '#ffffff';
+      return;
+    }
+    
+    const day = parseInt(match[1]);
+    const month = parseInt(match[2]) - 1; // Månader är 0-indexerade
+    const year = parseInt(match[3]);
+    
+    const targetDate = new Date(year, month, day, 23, 59, 59);
+    
+    // Kollar om datumet är giltigt
+    if (isNaN(targetDate.getTime())) {
+      display.textContent = 'Ogiltigt datum!';
+      display.style.color = '#ff4444';
+      return;
+    }
+    
+    // Rensar tidigare interval
+    if (countdownInterval) {
+      clearInterval(countdownInterval);
+    }
+    
+    // Uppdaterar countdown varje sekund
+    countdownInterval = setInterval(function() {
+      const now = new Date().getTime();
+      const distance = targetDate - now;
+      
+      if (distance < 0) {
+        clearInterval(countdownInterval);
+        display.textContent = 'Datumet har passerat!';
+        display.style.color = '#ff4444';
+        return;
+      }
+      
+      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+      
+      display.textContent = days + 'd ' + hours + 'h ' + minutes + 'm ' + seconds + 's';
+      display.style.color = '#ffffff';
+    }, 1000);
   });
 </script>
 
