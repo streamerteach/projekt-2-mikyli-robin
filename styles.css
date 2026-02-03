@@ -482,7 +482,6 @@ body#home .countdown-display {
 
 /* ====== BOTTOM BUTTONS ====== */
 body#home .actions{
-  position: fixed;
   left: 0;
   right: 0;
   bottom: 28px;
@@ -491,6 +490,7 @@ body#home .actions{
   gap: 70px;
   pointer-events: none;
   width: 100%;
+  padding-bottom: 30px;
 }
 
 body#home .btn{
@@ -523,7 +523,6 @@ body#home .btnConnect{
 
 /*footer style*/
 footer {
-    position: fixed;
     bottom: 0;
     left: 0;
     width: 100%;

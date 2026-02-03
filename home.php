@@ -233,10 +233,13 @@ foreach ($users as $uEmail => $uData) {
 </script>
 
 <footer>
-  <p>&copy; <?php echo date("Y"); ?> Dating Site. All rights reserved.</p>
+  <p>&copy; <?php echo date("Y"); ?> VerifiedCircle. All rights reserved.</p>
     <?php
     $visitorData = handleVisitor($email, $users);
-    echo "Antal unika besökare: " . $visitorData['unique_visitors'];
+    echo "Site Visitors: " . $visitorData['unique_visitors'];
+    ?><br>
+    <?php
+    echo "Welcome, " . $visitorData['full_name'] . "! Your last visit was: " . $visitorData['last_visit'] . ".";
     ?>
 </footer>
 

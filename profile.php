@@ -20,7 +20,7 @@ include_once __DIR__ . "/visitor_counter.php";
 
 // Hanterar besök och visar välkomstmeddelande
 $visitorData = handleVisitor($email, $users);
-echo "Välkommen, " . $visitorData['full_name'] . "! Ditt senaste besök var: " . $visitorData['last_visit'] . ".";
+/*echo "Välkommen, " . $visitorData['full_name'] . "! Ditt senaste besök var: " . $visitorData['last_visit'] . "."; */ 
 
 // Fetchar userns data
 $user = $users[$email];
