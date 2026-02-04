@@ -546,3 +546,84 @@ footer {
   body#home .actions{ gap: 24px; bottom: 18px; }
   body#home .btn{ padding: 12px 34px; }
 }
+
+/* ===== Reviews Page ===== */
+.reviews-main {
+  max-width: 800px;
+  margin: 50px auto;
+  padding: 20px;
+}
+
+.reviews-title {
+  color: white;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.reviews-form-box {
+  background: rgba(0, 0, 0, 0.493);
+  padding: 30px;
+  border-radius: 10px;
+  margin-bottom: 40px;
+}
+
+.reviews-form-box label {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: bold;
+  color: white;
+}
+
+.reviews-textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-family: Arial, sans-serif;
+}
+
+.reviews-submit-btn {
+  margin-top: 15px;
+  padding: 10px 30px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.reviews-section-title {
+  color: white;
+  margin-bottom: 20px;
+}
+
+.reviews-empty {
+  color: white;
+  text-align: center;
+}
+
+.review-card {
+  background: rgba(255,255,255,0.9);
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 15px;
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  color: #000777;
+}
+
+.review-timestamp {
+  color: #000000de;
+  font-size: 14px;
+}
+
+.review-comment {
+  margin: 0;
+  line-height: 1.6;
+  color: #000000da;
+}

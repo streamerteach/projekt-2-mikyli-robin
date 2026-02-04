@@ -72,6 +72,7 @@ foreach ($users as $uEmail => $uData) {
 <!-- Hamburger dropdown -->
 <div class="menuDropdown" id="menuDropdown" aria-label="User menu">
   <a class="menuItem" href="setup.php">Setup</a>
+  <a class="menuItem" href="reviews.php">Leave a Review</a>
   <a class="menuItem logout" href="logout.php">Logout</a>
 </div>
 
