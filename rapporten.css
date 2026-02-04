@@ -1,0 +1,91 @@
+@charset "UTF-8";
+html {
+    height: 100%; 
+}
+
+
+body {
+    height: 100%;
+    background-color: #242424; 
+    font-family: "Times New Roman", Georgia, serif;
+    margin: 0;
+    padding: 20px;
+}
+
+
+section {
+    max-width: 800px;
+    background-color: #353535; 
+    margin: 0 auto; 
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px; 
+}
+
+article h1 {
+    text-align: center; 
+    margin-bottom: 20px;
+    padding-bottom: 30px; 
+    color: rgb(230, 230, 230);
+}
+
+h2 {
+    text-align: center; 
+    margin-bottom: 20px;
+    padding-bottom: 10px;     
+    padding-top: 20px; 
+    color: rgb(230, 230, 230);
+}
+
+p {
+    border-bottom: 2px solid rgb(149, 149, 149);
+    margin-bottom: 40px; 
+    padding-top: 10px;
+    padding-bottom: 30px;
+    color: rgb(230, 230, 230);
+    line-height: 2.0; 
+}   
+
+ol {
+    padding-left: 20px; 
+    color: rgb(230, 230, 230);
+    line-height: 2.0;
+    border-bottom: 2px solid rgb(149, 149, 149);
+    padding-bottom: 30px;
+}
+
+ul {
+    padding-left: 20px; 
+    color: rgb(230, 230, 230);
+    line-height: 2.0;
+    border-bottom: 2px solid rgb(149, 149, 149);
+    padding-bottom: 30px;
+}
+
+.addline ul {
+    border-bottom: 4px solid rgb(230, 230, 230);
+    margin-bottom: 20px;
+    padding-bottom: 30px;
+}
+
+section h1 {
+    text-align: center; 
+    color: rgb(230, 230, 230);
+}
+
+img {
+    display: block; 
+    max-width: 100%; 
+    height: auto; 
+    margin: 0 auto; 
+    padding: 20px 0;
+}
+
+.Webbrapport h1 {
+    border-top: 4px solid rgb(230, 230, 230);
+    padding-top: 40px;
+    text-align: center; 
+    margin-bottom: 20px;
+    padding-bottom: 30px; 
+    color: rgb(230, 230, 230);
+}
