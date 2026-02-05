@@ -1,16 +1,22 @@
 <?php
+// startar en session för att ha koll på användarens inloggningsstatus
 session_start();
+
+// Om användaren inte är inloggad eller saknar e-post, omdirigerar den en till inloggningssidan
 if (empty($_SESSION["logged_in"]) || empty($_SESSION["email"])) {
   header("Location: index.php");
   exit;
 }
 
+//laddar användardatan från JSON-fil
 $file = __DIR__ . "/users.json";
 $users = file_exists($file) ? json_decode(file_get_contents($file), true) : [];
 if (!is_array($users)) $users = [];
 
+// Hämtar den inloggade användarens e-postadress
 $email = $_SESSION["email"];
 
+//kontrollerar om användaren har slutfört onboarding, annars omdirigerrar den till setup-sidan
 if (empty($users[$email]["onboarding_complete"])) {
   header("Location: setup.php");
   exit;
@@ -27,9 +33,11 @@ $candidateEmail = null;
 $candidate = null;
 
 foreach ($users as $uEmail => $uData) {
+  // Hoppar över den inloggade användaren och användare som inte har slutfört onboarding
   if ($uEmail === $email) continue;
   if (empty($uData["onboarding_complete"])) continue;
 
+  //Sätter första giltiga användaren som kandidat
   $candidateEmail = $uEmail;
   $candidate = is_array($uData) ? $uData : [];
   break;
@@ -49,6 +57,7 @@ foreach ($users as $uEmail => $uData) {
 <body id="home" style="background-image: url('images/VCbackground.png');">
 
   <header>
+    <!-- navigationsmeny -->
     <div class="avatar" aria-label="Profile"></div>
 
     <div class="titleWrap">
@@ -80,7 +89,7 @@ foreach ($users as $uEmail => $uData) {
   </header>
 
   <main>
-    <!-- COUNTDOWN SECTION -->
+    <!-- COUNTDOWN SECTIONIONEN -->
     <div class="countdown-wrapper">
       <h3 class="countdown-title">When is your date?</h3>
       <input type="text" id="dateInput" class="countdown-input" placeholder="DD-MM-YYYY">

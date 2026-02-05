@@ -1,24 +1,29 @@
 <?php
+//startar en sessionionen
 session_start();
+
+// Om användaren inte är inloggad eller saknar e-post, omdirigerar den till inloggningssidan
 if (empty($_SESSION["logged_in"]) || empty($_SESSION["email"])) {
   header("Location: index.php");
   exit;
 }
 
+// laddar användardatan från en JSON-fil
 $file = __DIR__ . "/users.json";
 $users = file_exists($file) ? json_decode(file_get_contents($file), true) : [];
 if (!is_array($users)) $users = [];
 
+//Hämtar den inloggade användarens e-postadress och fulla namn
 $email = $_SESSION["email"];
 $fullName = $users[$email]['fullname'] ?? $email;
 
-// Hanterar när användaren skickar en kommentar
+//Hanterar när användaren skickar en kommentar
 if ($_SERVER["REQUEST_METHOD"] === "POST" && !empty($_POST["comment"])) {
   $reviewsFile = __DIR__ . "/reviews.json";
   $reviews = file_exists($reviewsFile) ? json_decode(file_get_contents($reviewsFile), true) : [];
   if (!is_array($reviews)) $reviews = [];
 
-  // Lägger till ny kommentar
+  // Läggertill ny kommentar i listan
   $newReview = [
     "username" => $fullName,
     "email" => $email,
@@ -26,15 +31,17 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && !empty($_POST["comment"])) {
     "timestamp" => date('Y-m-d H:i:s')
   ];
 
-  array_unshift($reviews, $newReview); // Lägger till först (nyaste överst)
+  array_unshift($reviews, $newReview); // Lägger till ny kommentar överst i listan
 
+  //Sparar alla kommentarer i JSON-filen
   file_put_contents($reviewsFile, json_encode($reviews, JSON_PRETTY_PRINT));
   
+  //laddar om sidan efter att kommentaren har skickats
   header("Location: reviews.php");
   exit;
 }
 
-// Läser alla kommentarer
+// Läser alla tidigare kommentarer från JSON-filen
 $reviewsFile = __DIR__ . "/reviews.json";
 $reviews = file_exists($reviewsFile) ? json_decode(file_get_contents($reviewsFile), true) : [];
 if (!is_array($reviews)) $reviews = [];
@@ -52,6 +59,7 @@ if (!is_array($reviews)) $reviews = [];
 <body id="home" style="background-image: url('images/VCbackground.png');">
 
   <header>
+    <!-- navigationsmeny -->
     <div class="avatar" aria-label="Profile"></div>
 
     <div class="titleWrap">
@@ -72,6 +80,7 @@ if (!is_array($reviews)) $reviews = [];
       </div>
     </div>
 
+    <!-- Dropdown-menyn för andra användaralternativen -->
     <div class="menuDropdown" id="menuDropdown" aria-label="User menu">
       <a class="menuItem" href="setup.php">Setup</a>
       <a class="menuItem" href="reviews.php">Leave a Review</a>
@@ -106,9 +115,11 @@ if (!is_array($reviews)) $reviews = [];
       <?php foreach ($reviews as $review): ?>
         <div class="review-card">
           <div class="review-header">
+            <!--Visar användarnamnet och tiden för kommentaren -->
             <strong><?php echo htmlspecialchars($review['username'] ?? 'Unknown'); ?></strong>
             <span class="review-timestamp"><?php echo htmlspecialchars($review['timestamp'] ?? ''); ?></span>
           </div>
+          <!-- Visar själva kommentaren -->
           <p class="review-comment"><?php echo nl2br(htmlspecialchars($review['comment'] ?? '')); ?></p>
         </div>
       <?php endforeach; ?>
@@ -116,6 +127,7 @@ if (!is_array($reviews)) $reviews = [];
   </main>
 
   <script>
+    //Hanterar menyknappen för att visa/dölja menyn
     const burgerBtn = document.getElementById("burgerBtn");
     const menu = document.getElementById("menuDropdown");
 

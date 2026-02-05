@@ -1,21 +1,27 @@
 <?php
+// Startar en session för att ha koll på användarens inloggningsstatus
 session_start();
+
+// Om användaren inte är inloggad, omdirigera den till inloggningssidan
 if (empty($_SESSION["logged_in"])) {
   header("Location: index.php");
   exit;
 }
 
+// Laddar användardatan från en JSON-fil
 $file = __DIR__ . "/users.json";
 $users = file_exists($file) ? json_decode(file_get_contents($file), true) : [];
 if (!is_array($users)) $users = [];
 
+//Hämtar den inloggade användarens e-postadress
 $email = $_SESSION["email"] ?? "";
 
+//Kontrollerar om användaren har slutfört onboarding, annars omdirigera den till setup-sidan
 if (empty($users[$email]["onboarding_complete"])) {
   header("Location: setup.php"); 
   exit;
 }
-// Inkluderar besöksräknaren
+//Inkluderar besöksräknaren
 include_once __DIR__ . "/visitor_counter.php";
 
 // Hanterar besök och visar välkomstmeddelande
@@ -47,6 +53,7 @@ $bio = $user['profile']['bio'] ?? 'N/A';
 <body id="home" style = "background-image: url('images/VCbackground.png');">
 
   <header>
+    <!--navigationsmeny -->
     <div class="avatar" aria-label="Profile"></div>
 
     <div class="titleWrap">
@@ -78,6 +85,7 @@ $bio = $user['profile']['bio'] ?? 'N/A';
   </header>
 
   <script>
+  // Hanterar menyknappen för att visa/dölja menyn
   const burgerBtn = document.getElementById("burgerBtn");
   const menu = document.getElementById("menuDropdown");
 
@@ -97,24 +105,24 @@ $bio = $user['profile']['bio'] ?? 'N/A';
 </div>
 
 <script>
-  // Sets the date for Valentine's Day
+  //sätter datumet för valentines day
   const valentineDate = new Date(new Date().getFullYear(), 1, 14, 0, 0, 0).getTime();
 
-  // Updates the countdown every second
+  // Uppdaterar nedräkningen varje sekund
   const countdownInterval = setInterval(() => {
     const now = new Date().getTime();
     const timeLeft = valentineDate - now;
 
-    // Calculates the days, hours, minutes, and seconds
+    // Räknar dagar, timmar, minuter och sekunder kvar
     const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
     const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
     const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
 
-    // Display the result
+    //Visar resultatet
     document.getElementById("timer").innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
 
-    // When the countdown is over the message is displayed
+    //När räkningen är slut visas ett meddelande
     if (timeLeft < 0) {
       clearInterval(countdownInterval);
       document.getElementById("timer").innerHTML = "Hopefully you found someone special!";
@@ -124,6 +132,7 @@ $bio = $user['profile']['bio'] ?? 'N/A';
 
 <div class="profile-box">
   <h2>Profile Information</h2>
+  <!-- Visar användarens profilinformation -->
   <img src="<?php echo htmlspecialchars($profile); ?>" alt="Profile Picture" style="width:150px;height:150px;border-radius:50%;"><br>
   <p><strong>Full Name:</strong> <?php echo htmlspecialchars($fullname); ?></p>
   <p><strong>Date of Birth:</strong> <?php echo htmlspecialchars($birthdate); ?></p>
