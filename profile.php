@@ -30,14 +30,31 @@ $visitorData = handleVisitor($email, $users);
 
 // Fetchar userns data
 $user = $users[$email];
-$fullname = $user['fullname'] ?? 'N/A';
+// Prefer the fields written by settings.php (top-level), fall back to older nested keys
+$fullname = $user['display_name'] ?? $user['fullname'] ?? 'N/A';
 $birthdate = $user['birthdate'] ?? 'N/A';
-$profile = $user['profile']['profile_picture'] ?? 'images/default-profile.png';
-$city = $user['profile']['city'] ?? 'N/A';
-$lookingFor = $user['preferences']['looking_for'] ?? 'N/A';
-$ageMin = $user['preferences']['age_min'] ?? 'N/A';
-$ageMax = $user['preferences']['age_max'] ?? 'N/A';
-$bio = $user['profile']['bio'] ?? 'N/A';
+$profile = 'images/default-profile.png';
+if (!empty($user['profile']['profile_picture'])) {
+  $profile = $user['profile']['profile_picture'];
+} elseif (!empty($user['profile_picture'])) {
+  $profile = $user['profile_picture'];
+}
+$city = $user['city'] ?? ($user['profile']['city'] ?? 'N/A');
+$lookingFor = $user['looking_for'] ?? ($user['preferences']['looking_for'] ?? 'N/A');
+$ageMin = $user['age_min'] ?? ($user['preferences']['age_min'] ?? 'N/A');
+$ageMax = $user['age_max'] ?? ($user['preferences']['age_max'] ?? 'N/A');
+$bio = $user['bio'] ?? ($user['profile']['bio'] ?? 'N/A');
+
+// First date preference (top-level or nested). Map to a readable label.
+$firstDatePrefKey = $user['first_date_pref'] ?? ($user['preferences']['first_date_pref'] ?? '');
+$firstDatePref = '';
+if (is_string($firstDatePrefKey) && $firstDatePrefKey !== '') {
+  $map = [
+    'coffee_walk' => 'Coffee / Walk',
+    'dinner_date' => 'Dinner date',
+  ];
+  $firstDatePref = $map[$firstDatePrefKey] ?? $firstDatePrefKey;
+}
 
 ?>
 
@@ -76,7 +93,7 @@ $bio = $user['profile']['bio'] ?? 'N/A';
 
 <!-- Hamburger dropdown -->
 <div class="menuDropdown" id="menuDropdown" aria-label="User menu">
-  <a class="menuItem" href="setup.php">Setup</a>
+  <a class="menuItem" href="settings.php">Settings</a>
   <a class="menuItem" href="reviews.php">Leave a Review</a>
   <a class="menuItem" href="rapporten.html">Rapporten</a>
   <a class="menuItem logout" href="logout.php">Logout</a>
@@ -138,6 +155,9 @@ $bio = $user['profile']['bio'] ?? 'N/A';
   <p><strong>Date of Birth:</strong> <?php echo htmlspecialchars($birthdate); ?></p>
   <p><strong>City:</strong> <?php echo htmlspecialchars($city); ?></p>
   <p><strong>Looking for:</strong> <?php echo htmlspecialchars($lookingFor); ?></p>
+  <?php if ($lookingFor === 'relationship' && $firstDatePref): ?>
+    <p><strong>First date preference:</strong> <?php echo htmlspecialchars($firstDatePref); ?></p>
+  <?php endif; ?>
   <p><strong>Age range:</strong> <?php echo htmlspecialchars($ageMin); ?> to <?php echo htmlspecialchars($ageMax); ?></p>
   <p><strong>Short bio:</strong> <?php echo nl2br(htmlspecialchars($bio)); ?></p>
 </div>

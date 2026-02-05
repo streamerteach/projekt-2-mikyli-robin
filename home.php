@@ -28,19 +28,98 @@ include_once __DIR__ . "/visitor_counter.php";
 // Hanterar besök och visar antal unika besökare
 $visitorData = handleVisitor($email, $users);
 
-/* ===== pick ONE candidate (keep it minimal) ===== */
+/* ===== pick ONE candidate (unseen first, otherwise cycle old) ===== */
 $candidateEmail = null;
 $candidate = null;
 
-foreach ($users as $uEmail => $uData) {
-  // Hoppar över den inloggade användaren och användare som inte har slutfört onboarding
-  if ($uEmail === $email) continue;
-  if (empty($uData["onboarding_complete"])) continue;
+// load likes/matches/skips
+$likesFile = __DIR__ . "/likes.json";
+$matchesFile = __DIR__ . "/matches.json";
+$skipsFile = __DIR__ . "/skips.json";
 
-  //Sätter första giltiga användaren som kandidat
-  $candidateEmail = $uEmail;
-  $candidate = is_array($uData) ? $uData : [];
-  break;
+$likes = file_exists($likesFile) ? json_decode(file_get_contents($likesFile), true) : [];
+$matches = file_exists($matchesFile) ? json_decode(file_get_contents($matchesFile), true) : [];
+$skips = file_exists($skipsFile) ? json_decode(file_get_contents($skipsFile), true) : [];
+
+// Build list of all candidates (excluding yourself, onboarding only)
+$allCandidates = [];
+foreach ($users as $uEmail => $uData) {
+  if (strtolower($uEmail) === strtolower($email)) continue;
+  if (empty($uData["onboarding_complete"])) continue;
+  $allCandidates[] = $uEmail;
+}
+
+// Build seen set (case-insensitive)
+$seen = [];
+if (isset($likes[$email]) && is_array($likes[$email]))   $seen = array_merge($seen, array_values($likes[$email]));
+if (isset($matches[$email]) && is_array($matches[$email])) $seen = array_merge($seen, array_values($matches[$email]));
+if (isset($skips[$email]) && is_array($skips[$email]))   $seen = array_merge($seen, array_values($skips[$email]));
+$seen[] = $email;
+
+$seen_lc = array_map('strtolower', array_values($seen));
+
+// Pick unseen first
+$unseenCandidates = [];
+foreach ($allCandidates as $uEmail) {
+  if (!in_array(strtolower($uEmail), $seen_lc, true)) $unseenCandidates[] = $uEmail;
+}
+
+if (count($allCandidates) === 0) {
+  $candidateEmail = null;
+  $candidate = null;
+} elseif (count($unseenCandidates) > 0) {
+  // random unseen
+  $candidateEmail = $unseenCandidates[array_rand($unseenCandidates)];
+  $candidate = is_array($users[$candidateEmail] ?? null) ? $users[$candidateEmail] : [];
+} else {
+  // no unseen left -> cycle old profiles
+  $idx = ($_SESSION['cycle_idx'] ?? 0) % count($allCandidates);
+  $candidateEmail = $allCandidates[$idx];
+  $candidate = is_array($users[$candidateEmail] ?? null) ? $users[$candidateEmail] : [];
+}
+
+
+// Normalize candidate fields so the template can use consistent names
+$primary = "";
+$cName = "";
+$cBio = "";
+$cCity = "";
+$cAge = "";
+$cFirstDatePref = "";
+if ($candidate) {
+  $cName = $candidate['display_name'] ?? $candidate['fullname'] ?? $candidate['name'] ?? '';
+  $cBio  = $candidate['bio'] ?? ($candidate['profile']['bio'] ?? '');
+  $cCity = $candidate['city'] ?? ($candidate['profile']['city'] ?? '');
+
+  // Age: prefer explicit `age`, otherwise compute from `birthdate` if available
+  if (!empty($candidate['age'])) {
+    $cAge = (int)$candidate['age'];
+  } elseif (!empty($candidate['birthdate'])) {
+    $bd = $candidate['birthdate'];
+    // Try to parse YYYY or YYYY-MM-DD
+    $year = null;
+    if (preg_match('/^(\\d{4})/', $bd, $m)) $year = (int)$m[1];
+    if ($year) $cAge = max(0, (int)date('Y') - $year);
+  }
+
+  // First date preference
+  $firstDatePrefKey = $candidate['first_date_pref'] ?? ($candidate['preferences']['first_date_pref'] ?? '');
+  if (is_string($firstDatePrefKey) && $firstDatePrefKey !== '') {
+    $map = [
+      'coffee_walk' => 'Coffee / Walk',
+      'dinner_date' => 'Dinner date',
+    ];
+    $cFirstDatePref = $map[$firstDatePrefKey] ?? $firstDatePrefKey;
+  }
+
+  // Primary photo: prefer photos[0], then profile_picture, then nested profile
+  if (!empty($candidate['photos']) && is_array($candidate['photos']) && !empty($candidate['photos'][0])) {
+    $primary = $candidate['photos'][0];
+  } elseif (!empty($candidate['profile_picture'])) {
+    $primary = $candidate['profile_picture'];
+  } elseif (!empty($candidate['profile']['profile_picture'])) {
+    $primary = $candidate['profile']['profile_picture'];
+  }
 }
 ?>
 
@@ -80,7 +159,7 @@ foreach ($users as $uEmail => $uData) {
 
 <!-- Hamburger dropdown -->
 <div class="menuDropdown" id="menuDropdown" aria-label="User menu">
-  <a class="menuItem" href="setup.php">Setup</a>
+  <a class="menuItem" href="settings.php">Settings</a>
   <a class="menuItem" href="reviews.php">Leave a Review</a>
   <a class="menuItem" href="rapporten.html">Rapporten</a>
   <a class="menuItem logout" href="logout.php">Logout</a>
@@ -104,12 +183,37 @@ foreach ($users as $uEmail => $uData) {
         <div class="profileCard">
   <?php if (!$candidateEmail): ?>
     <div style="height:100%;display:grid;place-items:center;text-align:center;padding:24px;opacity:.9;">
-      No other profiles available.
+      <div>No other profiles available.</div>
+      <div style="margin-top:12px;font-size:12px;opacity:0.9;text-align:left;max-width:420px;">
+        <strong>Debug:</strong>
+        <div>Seen (lowercased):
+          <pre style="white-space:pre-wrap;background:rgba(0,0,0,0.12);padding:8px;border-radius:6px;"> <?= htmlspecialchars(json_encode($seen_lc, JSON_PRETTY_PRINT)) ?></pre>
+        </div>
+        <div>Users in users.json (keys):
+          <pre style="white-space:pre-wrap;background:rgba(0,0,0,0.06);padding:8px;border-radius:6px;"> <?= htmlspecialchars(json_encode(array_keys($users), JSON_PRETTY_PRINT)) ?></pre>
+        </div>
+        <div>Available candidates (onboarding_complete & not seen):
+          <pre style="white-space:pre-wrap;background:rgba(0,0,0,0.06);padding:8px;border-radius:6px;"> <?php
+            $avail = [];
+            foreach ($users as $uE => $uD) {
+              if (!empty($uD['onboarding_complete']) && !in_array(strtolower($uE), $seen_lc, true)) $avail[] = $uE;
+            }
+            echo htmlspecialchars(json_encode($avail, JSON_PRETTY_PRINT));
+          ?>
+          </pre>
+        </div>
+      </div>
     </div>
   <?php else: ?>
-    <!-- OPTIONAL: show name overlay (doesn't change layout) -->
+    <!-- show primary photo -->
+    <?php if ($primary): ?>
+      <img src="<?= htmlspecialchars($primary) ?>" alt="Primary photo" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:12px;">
+    <?php else: ?>
+      <div style="height:100%;display:grid;place-items:center;text-align:center;padding:24px;opacity:.9;">No photo</div>
+    <?php endif; ?>
+    <!-- name overlay -->
     <div style="position:absolute;left:22px;top:18px;font-weight:800;font-size:22px;text-shadow:0 6px 18px rgba(0,0,0,.35);">
-      <?= htmlspecialchars($candidate["name"] ?? $candidateEmail) ?>
+      <?= htmlspecialchars($cName ?: $candidateEmail) ?>
     </div>
   <?php endif; ?>
 
@@ -122,16 +226,9 @@ foreach ($users as $uEmail => $uData) {
 
       <!-- RIGHT STACKED PANEL -->
       <section class="panel panelRight">
-  <?php
-    $cName = $candidate["name"] ?? "";
-    $cBio  = $candidate["bio"] ?? "";
-    $cAge  = $candidate["age"] ?? "";
-    $cCity = $candidate["city"] ?? "";
-  ?>
-
   <div class="box">
     <div style="padding:18px;font-size:22px;font-weight:800;">
-      <?= htmlspecialchars($cName) ?>
+      <?= htmlspecialchars($cName ?: ($candidateEmail ?? "")) ?>
     </div>
   </div>
 
@@ -147,11 +244,13 @@ foreach ($users as $uEmail => $uData) {
     </div>
   </div>
 
+  <?php if ($cFirstDatePref): ?>
   <div class="box">
     <div style="padding:18px;font-size:14px;opacity:.85;">
-      <?= htmlspecialchars($candidateEmail ?? "") ?>
+      <strong>First date:</strong> <?= htmlspecialchars($cFirstDatePref) ?>
     </div>
   </div>
+  <?php endif; ?>
 </section>
 
 

@@ -218,7 +218,7 @@ html{
   background: var(--bg);
 }
 
-/* ===== HOME PAGE ROOT ===== */
+/* HOME PAGE ROOT  */
 body#home{
   /*background: var(--bg); */ /*bort med den*/
   color: var(--white);
@@ -233,7 +233,7 @@ body#home{
   height: auto;
 }
 
-/* ====== HEADER (HOME) ====== */
+/* HEADER (HOME)  */
 body#home header{
   background: var(--headerBlue);
   height: 100px;
@@ -315,7 +315,7 @@ body#home .burgerLines span{
   opacity: 0.9;
 }
 
-/* ===== Hamburger dropdown ===== */
+/* Hamburger dropdown */
 body#home .menuDropdown{
   position: absolute;
   top: 78px;          /* below header title area */
@@ -351,7 +351,7 @@ body#home .menuItem.logout{
   color: #ffb3b3;
 }
 
-/* ====== MAIN CONTENT ====== */
+/* MAIN CONTENT  */
 body#home main{
   flex: 1;
   width: 100%;
@@ -379,7 +379,8 @@ body#home .panel{
 }
 
 /* LEFT BIG CARD */
-body#home .panelLeft{
+.panelLeft{
+  width: 100%;
   height: 520px;
   display: flex;
   align-items: stretch;
@@ -428,7 +429,7 @@ body#home .box{
   border: 3px solid rgba(255,255,255,0.12);
 }
 
-/* ====== COUNTDOWN TIMER ====== */
+/* COUNTDOWN TIMER */
 body#home .countdown-wrapper {
   margin: 0 auto 30px;
   padding: 15px;
@@ -480,7 +481,7 @@ body#home .countdown-display {
   min-height: 20px;
 }
 
-/* ====== BOTTOM BUTTONS ====== */
+/* BOTTOM BUTTONS  */
 body#home .actions{
   left: 0;
   right: 0;
@@ -533,7 +534,7 @@ footer {
     color: #ffffffe5; 
 }
 
-/* ====== RESPONSIVE ====== */
+/* RESPONSIVE */
 @media (max-width: 900px){
   body#home header{ height: 100px; }
   body#home .title{ font-size: 34px; }
@@ -547,7 +548,7 @@ footer {
   body#home .btn{ padding: 12px 34px; }
 }
 
-/* ===== Reviews Page ===== */
+/* Reviews Page  */
 .reviews-main {
   max-width: 800px;
   margin: 50px auto;
@@ -626,4 +627,159 @@ footer {
   margin: 0;
   line-height: 1.6;
   color: #000000da;
+}
+
+/* IOS Glass*/
+
+body#home.page-settings .glass{
+  background: rgba(255,255,255,0.14);
+  border: 1px solid rgba(255,255,255,0.18);
+  box-shadow: 0 18px 40px rgba(0,0,0,0.22);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+}
+
+/* Make the BLUE frames look a bit more “premium” */
+body#home.page-settings .panel{
+  box-shadow: 0 14px 32px rgba(0,0,0,0.25);
+}
+
+/* LEFT card inner image frame glass feel */
+body#home.page-settings .profileCard{
+  overflow: hidden; /* keeps glass edges clean */
+}
+
+/* RIGHT: give each section a small gap like your screenshot */
+body#home.page-settings .panelRight .box{
+  margin-bottom: 8px;
+  border-radius: 18px;
+  overflow: hidden;
+}
+body#home.page-settings .panelRight .box:last-child{
+  margin-bottom: 0;
+}
+
+/* Make each right-side section itself glass */
+body#home.page-settings .panelRight .box{
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.16);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+}
+
+/* Inputs: subtle glass inset */
+body#home.page-settings .panelRight input,
+body#home.page-settings .panelRight select,
+body#home.page-settings .panelRight textarea{
+  background: rgba(0,0,0,0.20);
+  border: 1px solid rgba(255,255,255,0.18);
+  color: #fff;
+  border-radius: 12px;
+  outline: none;
+}
+
+/* Optional: slightly softer text */
+body#home.page-settings .panelRight label{
+  opacity: 0.9;
+}
+
+/* 1 column centered */
+
+
+/* If your settings page uses: <body id="home" class="page-settings"> */
+body#home.page-settings main{
+  justify-content: center;
+  align-items: flex-start;   /* prevents vertical "perfect center" look */
+}
+
+/* Make the layout 1 column + centered */
+body#home.page-settings .layout{
+  grid-template-columns: 2fr !important;
+  gap: 24px !important;
+  justify-items: center;
+}
+
+/* Ensure panels don't stretch full width */
+body#home.page-settings .panel{
+  width: 100%;
+  max-width: 520px;
+}
+
+/* Let right panel height be natural (optional, looks nicer in 1 col) */
+body#home.page-settings .panelRight{
+  height: auto;
+  grid-template-rows: auto;  /* let content define height */
+}
+
+/* SETTINGS – BACK TO 2 COLUMNS */
+
+body#home.page-settings main{
+  justify-content: center;
+  align-items: center;
+}
+
+body#home.page-settings .layout{
+  grid-template-columns: 1fr 1fr !important;
+  width: min(1100px, 100%);
+  margin: 0 auto;
+  gap: 60px;
+}
+
+body#home.page-settings .panel{
+  width: 100%;
+}
+
+.primaryBig{
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+}
+.profileCard{
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* when we have a primary photo, hide the placeholder text only */
+.profileCard.hasPrimary .pfpPlaceholder{
+  display: none;
+}
+
+/* if your grey layer is NOT .pfpPlaceholder but some other overlay, hide it too */
+.profileCard.hasPrimary .pfpFill,
+.profileCard.hasPrimary .pfpPlaceholderLayer,
+.profileCard.hasPrimary .addPhotosOverlay{
+  display: none;
+}
+
+#bigProfileCard {
+  position: relative;
+}
+
+.addPhotoBtnInside {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 18px;
+
+  padding: 10px 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.35);
+
+  background: rgba(0,0,0,0.35);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+
+  z-index: 20;
+}
+
+.addPhotoBtnInside:hover {
+  background: rgba(0,0,0,0.5);
 }
