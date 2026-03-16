@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once "db.php";
 
 if (empty($_SESSION["logged_in"]) || empty($_SESSION["email"])) {
   header("Location: index.php");
@@ -7,27 +8,22 @@ if (empty($_SESSION["logged_in"]) || empty($_SESSION["email"])) {
 }
 
 $email = $_SESSION["email"];
-$file = __DIR__ . "/users.json";
 
-$users = file_exists($file) ? json_decode(file_get_contents($file), true) : [];
-if (!is_array($users)) $users = [];
+$stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
+$stmt->execute([$email]);
+$user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-if (!isset($users[$email])) {
+if (!$user) {
   header("Location: index.php");
   exit;
 }
 
-$user = $users[$email];
 $step = (int)($_GET["step"] ?? 1);
 if ($step < 1 || $step > 3) $step = 1;
 
 $error = "";
 
 /* ---------- helpers ---------- */
-function save_users($file, $users) {
-  file_put_contents($file, json_encode($users, JSON_PRETTY_PRINT));
-}
-
 function ensure_upload_dir($dir) {
   if (!is_dir($dir)) mkdir($dir, 0755, true);
 }
@@ -77,7 +73,7 @@ function handle_profile_upload($inputName, $uploadDir, &$error) {
     return null;
   }
 
-  // Return relative path for storing in JSON
+  // Return relative path for storing in database
   return "uploads/" . $name;
 }
 
@@ -91,15 +87,22 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if ($display_name === "") {
       $error = "Display name is required.";
     } else {
-      // Require upload
       $uploadPath = handle_profile_upload("profile_picture", __DIR__ . "/uploads", $error);
 
       if ($uploadPath) {
-        $users[$email]["display_name"] = $display_name;
-        $users[$email]["city"] = $city;
-        $users[$email]["profile_picture"] = $uploadPath;
+        $stmt = $conn->prepare("
+          UPDATE users
+          SET display_name = ?, city = ?, profile_picture = ?
+          WHERE email = ?
+        ");
 
-        save_users($file, $users);
+        $stmt->execute([
+          $display_name,
+          $city,
+          $uploadPath,
+          $email
+        ]);
+
         header("Location: setup.php?step=2");
         exit;
       }
@@ -122,16 +125,31 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
       }
 
       if ($error === "") {
-        $users[$email]["looking_for"] = $looking_for;
-
-        // Only store date preference if relationship
         if ($looking_for === "relationship") {
-          $users[$email]["first_date_pref"] = $date_pref;
+          $stmt = $conn->prepare("
+            UPDATE users
+            SET looking_for = ?, first_date_pref = ?
+            WHERE email = ?
+          ");
+
+          $stmt->execute([
+            $looking_for,
+            $date_pref,
+            $email
+          ]);
         } else {
-          unset($users[$email]["first_date_pref"]);
+          $stmt = $conn->prepare("
+            UPDATE users
+            SET looking_for = ?, first_date_pref = NULL
+            WHERE email = ?
+          ");
+
+          $stmt->execute([
+            $looking_for,
+            $email
+          ]);
         }
 
-        save_users($file, $users);
         header("Location: setup.php?step=3");
         exit;
       }
@@ -141,20 +159,27 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
   if ($step === 3) {
     $bio = trim($_POST["bio"] ?? "");
 
-    // Bio optional — but you can enforce it if you want
-    $users[$email]["bio"] = $bio;
+    $stmt = $conn->prepare("
+      UPDATE users
+      SET bio = ?, onboarding_complete = 1
+      WHERE email = ?
+    ");
 
-    // Finalize
-    $users[$email]["onboarding_complete"] = true;
+    $stmt->execute([
+      $bio,
+      $email
+    ]);
 
-    save_users($file, $users);
     header("Location: home.php");
     exit;
   }
 }
 
 /* ---------- pull latest user values for prefills ---------- */
-$user = $users[$email];
+$stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
+$stmt->execute([$email]);
+$user = $stmt->fetch(PDO::FETCH_ASSOC);
+
 $display_name = $user["display_name"] ?? "";
 $city = $user["city"] ?? "";
 $looking_for = $user["looking_for"] ?? "";
@@ -287,7 +312,6 @@ $bio = $user["bio"] ?? "";
             function sync(){
               const isRel = lf.value === "relationship";
               wrap.classList.toggle("hidden", !isRel);
-              // Make required only when relationship
               pref.required = isRel;
               if (!isRel) pref.value = "";
             }

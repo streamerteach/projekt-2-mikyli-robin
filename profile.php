@@ -1,61 +1,63 @@
 <?php
-// Startar en session för att ha koll på användarens inloggningsstatus
 session_start();
+require_once "db.php";
 
-// Om användaren inte är inloggad, omdirigera den till inloggningssidan
 if (empty($_SESSION["logged_in"])) {
   header("Location: index.php");
   exit;
 }
 
-// Laddar användardatan från en JSON-fil
-$file = __DIR__ . "/users.json";
-$users = file_exists($file) ? json_decode(file_get_contents($file), true) : [];
-if (!is_array($users)) $users = [];
-
-//Hämtar den inloggade användarens e-postadress
 $email = $_SESSION["email"] ?? "";
 
-//Kontrollerar om användaren har slutfört onboarding, annars omdirigera den till setup-sidan
-if (empty($users[$email]["onboarding_complete"])) {
-  header("Location: setup.php"); 
+/* load user from SQL */
+$stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
+$stmt->execute([$email]);
+$user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+if (!$user) {
+  header("Location: index.php");
   exit;
 }
-//Inkluderar besöksräknaren
+
+/* onboarding check */
+if (empty($user["onboarding_complete"])) {
+  header("Location: setup.php");
+  exit;
+}
+
+/* include visitor counter */
 include_once __DIR__ . "/visitor_counter.php";
 
-// Hanterar besök och visar välkomstmeddelande
-$visitorData = handleVisitor($email, $users);
-/*echo "Välkommen, " . $visitorData['full_name'] . "! Ditt senaste besök var: " . $visitorData['last_visit'] . "."; */ 
+/* visitor handler */
+$visitorData = handleVisitor($email, $user);
 
-// Fetchar userns data
-$user = $users[$email];
-// Prefer the fields written by settings.php (top-level), fall back to older nested keys
-$fullname = $user['display_name'] ?? $user['fullname'] ?? 'N/A';
-$birthdate = $user['birthdate'] ?? 'N/A';
-$profile = 'images/default-profile.png';
-if (!empty($user['profile']['profile_picture'])) {
-  $profile = $user['profile']['profile_picture'];
-} elseif (!empty($user['profile_picture'])) {
-  $profile = $user['profile_picture'];
+/* profile values */
+$fullname = $user["display_name"] ?? $user["fullName"] ?? "N/A";
+$birthdate = $user["birthdate"] ?? "N/A";
+
+$profile = "images/default-profile.png";
+if (!empty($user["profile_picture"])) {
+  $profile = $user["profile_picture"];
 }
-$city = $user['city'] ?? ($user['profile']['city'] ?? 'N/A');
-$lookingFor = $user['looking_for'] ?? ($user['preferences']['looking_for'] ?? 'N/A');
-$ageMin = $user['age_min'] ?? ($user['preferences']['age_min'] ?? 'N/A');
-$ageMax = $user['age_max'] ?? ($user['preferences']['age_max'] ?? 'N/A');
-$bio = $user['bio'] ?? ($user['profile']['bio'] ?? 'N/A');
 
-// First date preference (top-level or nested). Map to a readable label.
-$firstDatePrefKey = $user['first_date_pref'] ?? ($user['preferences']['first_date_pref'] ?? '');
-$firstDatePref = '';
-if (is_string($firstDatePrefKey) && $firstDatePrefKey !== '') {
+$city = $user["city"] ?? "N/A";
+$lookingFor = $user["looking_for"] ?? "N/A";
+$ageMin = $user["age_min"] ?? "N/A";
+$ageMax = $user["age_max"] ?? "N/A";
+$bio = $user["bio"] ?? "N/A";
+
+/* first date preference */
+$firstDatePrefKey = $user["first_date_pref"] ?? "";
+$firstDatePref = "";
+
+if ($firstDatePrefKey !== "") {
   $map = [
-    'coffee_walk' => 'Coffee / Walk',
-    'dinner_date' => 'Dinner date',
+    "coffee_walk" => "Coffee / Walk",
+    "dinner_date" => "Dinner date"
   ];
+
   $firstDatePref = $map[$firstDatePrefKey] ?? $firstDatePrefKey;
 }
-
 ?>
 
 <!DOCTYPE html>

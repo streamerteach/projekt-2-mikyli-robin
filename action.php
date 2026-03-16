@@ -1,75 +1,108 @@
 <?php
 session_start();
+require_once "db.php";
 
-/* must be logged in */
-if (empty($_SESSION["logged_in"])) { header("Location: index.php"); exit; }
+if (empty($_SESSION["logged_in"]) || empty($_SESSION["email"])) {
+    header("Location: index.php");
+    exit;
+}
 
-/* me + inputs */
-$me     = $_SESSION["email"];
+$currentEmail = $_SESSION["email"];
 $action = $_POST["action"] ?? "";
-$other  = $_POST["candidate"] ?? "";
+$candidateEmail = trim($_POST["candidate"] ?? "");
 
-/* guard: no empty / no self */
-if ($other === "" || $other === $me) {
-  header("Location: home.php");
-  exit;
+if ($candidateEmail === "" || strtolower($candidateEmail) === strtolower($currentEmail)) {
+    header("Location: home.php");
+    exit;
 }
 
-/* load json (create file if missing) */
-function load_json($path) {
-  if (!file_exists($path)) file_put_contents($path, "{}");
-  $data = json_decode(file_get_contents($path), true);
-  return is_array($data) ? $data : [];
+try {
+    // Make sure candidate exists and has completed onboarding
+    $stmt = $conn->prepare("
+        SELECT email, onboarding_complete
+        FROM users
+        WHERE email = ?
+    ");
+    $stmt->execute([$candidateEmail]);
+    $candidateUser = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$candidateUser || empty($candidateUser["onboarding_complete"])) {
+        header("Location: home.php");
+        exit;
+    }
+
+    if ($action === "skip") {
+        // Insert skip only if it doesn't already exist
+        $stmt = $conn->prepare("
+            IF NOT EXISTS (
+                SELECT 1 FROM skips WHERE from_email = ? AND to_email = ?
+            )
+            INSERT INTO skips (from_email, to_email)
+            VALUES (?, ?)
+        ");
+        $stmt->execute([
+            $currentEmail, $candidateEmail,
+            $currentEmail, $candidateEmail
+        ]);
+
+        header("Location: home.php");
+        exit;
+    }
+
+    if ($action === "like") {
+        // Insert like only if it doesn't already exist
+        $stmt = $conn->prepare("
+            IF NOT EXISTS (
+                SELECT 1 FROM likes WHERE from_email = ? AND to_email = ?
+            )
+            INSERT INTO likes (from_email, to_email)
+            VALUES (?, ?)
+        ");
+        $stmt->execute([
+            $currentEmail, $candidateEmail,
+            $currentEmail, $candidateEmail
+        ]);
+
+        // Check if reverse like exists
+        $stmt = $conn->prepare("
+            SELECT COUNT(*)
+            FROM likes
+            WHERE from_email = ? AND to_email = ?
+        ");
+        $stmt->execute([$candidateEmail, $currentEmail]);
+        $reverseLikeExists = ((int)$stmt->fetchColumn() > 0);
+
+        if ($reverseLikeExists) {
+            // Normalize order to avoid duplicate match rows
+            if (strtolower($currentEmail) < strtolower($candidateEmail)) {
+                $user1 = $currentEmail;
+                $user2 = $candidateEmail;
+            } else {
+                $user1 = $candidateEmail;
+                $user2 = $currentEmail;
+            }
+
+            $stmt = $conn->prepare("
+                IF NOT EXISTS (
+                    SELECT 1 FROM matches WHERE user1_email = ? AND user2_email = ?
+                )
+                INSERT INTO matches (user1_email, user2_email)
+                VALUES (?, ?)
+            ");
+            $stmt->execute([
+                $user1, $user2,
+                $user1, $user2
+            ]);
+        }
+
+        header("Location: home.php");
+        exit;
+    }
+
+    header("Location: home.php");
+    exit;
+
+} catch (PDOException $e) {
+    die("Action failed: " . $e->getMessage());
 }
-
-/* save json */
-function save_json($path, $data) {
-  file_put_contents($path, json_encode($data, JSON_PRETTY_PRINT));
-}
-
-/* files */
-$likesFile   = __DIR__ . "/likes.json";
-$matchesFile = __DIR__ . "/matches.json";
-
-/* state */
-$likes   = load_json($likesFile);
-$matches = load_json($matchesFile);
-
-if ($action === "like") {
-
-  /* add like -> likes[me][] */
-  if (!isset($likes[$me]) || !is_array($likes[$me])) $likes[$me] = [];
-  if (!in_array($other, $likes[$me], true)) $likes[$me][] = $other;
-
-  /* did other already like me? */
-  $otherLikesMe =
-    isset($likes[$other]) &&
-    is_array($likes[$other]) &&
-    in_array($me, $likes[$other], true);
-
-  /* mutual like = match */
-  if ($otherLikesMe) {
-
-    /* ensure match arrays exist */
-    if (!isset($matches[$me]) || !is_array($matches[$me])) $matches[$me] = [];
-    if (!isset($matches[$other]) || !is_array($matches[$other])) $matches[$other] = [];
-
-    /* add both sides (no dupes) */
-    if (!in_array($other, $matches[$me], true)) $matches[$me][] = $other;
-    if (!in_array($me, $matches[$other], true)) $matches[$other][] = $me;
-  }
-
-  /* write to disk */
-  save_json($likesFile, $likes);
-  save_json($matchesFile, $matches);
-
-} elseif ($action === "skip") {
-
-  /* optional: write skips.json so they won't show again */
-  /* keep same pattern as likes.json */
-
-}
-
-/* done -> back to home */
-header("Location: home.php");
-exit;
+?>

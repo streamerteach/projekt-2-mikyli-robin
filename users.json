@@ -1,0 +1,69 @@
+{
+    "theunknownman997@gmail.com": {
+        "fullname": "Miguel",
+        "password": "$2y$10$r8cZPy4mLyJ9rQjpj.diFezbvcjx26rYwtgxv62yqrCczLO\/bVsd6",
+        "birthdate": "1999-04-05",
+        "created_at": "2026-01-25T23:55:45+01:00",
+        "profile": {
+            "display_name": "Miguel",
+            "city": "Riihim\u00e4ki",
+            "bio": "sup bors"
+        },
+        "onboarding_step": 0,
+        "preferences": {
+            "looking_for": "networking",
+            "age_min": 27,
+            "age_max": 35
+        },
+        "onboarding_complete": true,
+        "display_name": "Mikyli",
+        "city": "Vantaa",
+        "bio": "Min\u00e4 olen sen Rikas sika suomenruotsalainen jonka oot ikin\u00e4 halunnut",
+        "looking_for": "relationship",
+        "photos": [
+            "uploads\/photo_71f5c12272c46eef.png"
+        ],
+        "profile_picture": "uploads\/photo_71f5c12272c46eef.png",
+        "first_date_pref": "dinner_date"
+    },
+    "mikael.ylirotu@gmail.com": {
+        "fullname": "Sup",
+        "birthdate": "1999-12-27",
+        "password": "$2y$10$o4BLMAx9ueGQWxv7HZFO\/.\/5j5z1p\/kezpu\/9aF3n2DtCBcgyvpX.",
+        "onboarding_complete": true,
+        "profile": {
+            "display_name": "Sup",
+            "city": "Helsinki",
+            "bio": "sdsda"
+        },
+        "onboarding_step": 0,
+        "preferences": {
+            "looking_for": "dating",
+            "age_min": 27,
+            "age_max": 35
+        }
+    },
+    "Mikyli@gmail.com": {
+        "fullname": "dsadasdsad",
+        "birthdate": "1999-02-22",
+        "password": "$2y$10$0Y9.i8FnK.p\/yBZcmAbhVeF1DEQNbc2ADAIjyWEMrKEPELVB\/cpDe",
+        "onboarding_complete": true,
+        "display_name": "Miguel",
+        "city": "Riihim\u00e4ki",
+        "profile_picture": "uploads\/pfp_206273b04203d509.jpg",
+        "looking_for": "relationship",
+        "first_date_pref": "dinner_date",
+        "bio": "dfasfdzfdz"
+    },
+    "admin@admin.com": {
+        "fullname": "Admin",
+        "birthdate": "1212-12-12",
+        "password": "$2y$10$BDmI4cJNT91cGZXsFATFF.edwkShFbN.XiqOMiyRL4SMslJwBBXt.",
+        "onboarding_complete": true,
+        "display_name": "Admin",
+        "city": "Admin",
+        "profile_picture": "uploads\/pfp_611e2da95b0317c9.jpg",
+        "looking_for": "friends",
+        "bio": "Admin Test"
+    }
+}

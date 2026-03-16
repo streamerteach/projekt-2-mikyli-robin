@@ -1,5 +1,7 @@
 <?php
 session_start();
+require_once "db.php";
+
 if (empty($_SESSION["logged_in"])) {
   header("Location: index.php");
   exit;
@@ -7,24 +9,36 @@ if (empty($_SESSION["logged_in"])) {
 
 $me = $_SESSION["email"] ?? "";
 
-// Load users
-$usersFile = __DIR__ . "/users.json";
-$users = file_exists($usersFile) ? json_decode(file_get_contents($usersFile), true) : [];
-if (!is_array($users)) $users = [];
+// Load current user
+$stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
+$stmt->execute([$me]);
+$currentUser = $stmt->fetch(PDO::FETCH_ASSOC);
+
+if (!$currentUser) {
+  header("Location: index.php");
+  exit;
+}
 
 // Require onboarding complete
-if (empty($users[$me]["onboarding_complete"])) {
+if (empty($currentUser["onboarding_complete"])) {
   header("Location: setup.php");
   exit;
 }
 
-// Load matches
-$matchesFile = __DIR__ . "/matches.json";
-$matches = file_exists($matchesFile) ? json_decode(file_get_contents($matchesFile), true) : [];
-if (!is_array($matches)) $matches = [];
-
-$myMatches = $matches[$me] ?? [];
-if (!is_array($myMatches)) $myMatches = [];
+// Load matched users in one query
+$stmt = $conn->prepare("
+  SELECT u.*
+  FROM users u
+  INNER JOIN matches m
+    ON (
+      (m.user1_email = ? AND m.user2_email = u.email)
+      OR
+      (m.user2_email = ? AND m.user1_email = u.email)
+    )
+  ORDER BY u.display_name, u.fullName, u.email
+");
+$stmt->execute([$me, $me]);
+$myMatches = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -73,18 +87,10 @@ if (!is_array($myMatches)) $myMatches = [];
         <p style="opacity:0.85;">No matches yet. Test: like each other from two accounts.</p>
       <?php else: ?>
         <div class="matchGrid">
-          <?php foreach ($myMatches as $matchEmail):
-            $u = $users[$matchEmail] ?? null;
-
-            $name = $u["profile"]["display_name"] ?? ($u["fullname"] ?? $matchEmail);
-
-            $photo = "";
-            if (!empty($u["profile"]["photos"]) && is_array($u["profile"]["photos"])) {
-              $photo = $u["profile"]["photos"][0] ?? "";
-            }
-            if (!$photo && !empty($u["profile"]["photo"])) {
-              $photo = $u["profile"]["photo"];
-            }
+          <?php foreach ($myMatches as $u):
+            $matchEmail = $u["email"] ?? "";
+            $name = $u["display_name"] ?? $u["fullName"] ?? $matchEmail;
+            $photo = $u["profile_picture"] ?? "";
           ?>
             <div class="matchCard">
               <div class="matchPhoto" style="<?php echo $photo ? "background-image:url('".htmlspecialchars($photo)."');" : ""; ?>"></div>

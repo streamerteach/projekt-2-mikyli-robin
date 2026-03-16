@@ -1,18 +1,25 @@
 <?php
 session_start();
+require_once "db.php";
+
 if (empty($_SESSION["logged_in"])) {
   header("Location: index.php");
   exit;
 }
 
-$file = __DIR__ . "/users.json";
-$users = file_exists($file) ? json_decode(file_get_contents($file), true) : [];
-if (!is_array($users)) $users = [];
-
 $email = $_SESSION["email"] ?? "";
 
-if (empty($users[$email]["onboarding_complete"])) {
-  header("Location: setup.php"); // changed from onboarding.php to setup.php
+$stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
+$stmt->execute([$email]);
+$user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+if (!$user) {
+  header("Location: index.php");
+  exit;
+}
+
+if (empty($user["onboarding_complete"])) {
+  header("Location: setup.php");
   exit;
 }
 ?>

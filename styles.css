@@ -489,7 +489,6 @@ body#home .actions{
   display: flex;
   justify-content: center;
   gap: 70px;
-  pointer-events: none;
   width: 100%;
   padding-bottom: 30px;
 }

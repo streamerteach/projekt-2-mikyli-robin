@@ -1,4 +1,6 @@
 <?php
+require_once "db.php";
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $fullname = trim($_POST['fullname'] ?? '');
@@ -7,13 +9,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $confirm_password = $_POST['confirm_password'] ?? '';
     $birthdate = $_POST['birthdate'] ?? '';
 
-    // Basic validation
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         echo "<script>alert('Invalid email.'); window.location.href='register.php';</script>";
         exit;
     }
 
-    // Calculate age
+    if (empty($birthdate)) {
+        echo "<script>alert('Birthdate is required.'); window.location.href='register.php';</script>";
+        exit;
+    }
+
     $birthDateObj = new DateTime($birthdate);
     $today = new DateTime();
     $age = $today->diff($birthDateObj)->y;
@@ -28,36 +33,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // Hash the password
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-    // ===== Local storage (JSON) =====
-    $file = __DIR__ . "/users.json";
-    if (!file_exists($file)) {
-        file_put_contents($file, "{}");
-    }
+    try {
+        // Check if email already exists
+        $checkStmt = $conn->prepare("SELECT COUNT(*) FROM users WHERE email = ?");
+        $checkStmt->execute([$email]);
+        $emailExists = $checkStmt->fetchColumn();
 
-    $users = json_decode(file_get_contents($file), true);
-    if (!is_array($users)) $users = [];
+        if ($emailExists > 0) {
+            echo "<script>alert('Email already registered. Please sign in.'); window.location.href='index.php';</script>";
+            exit;
+        }
 
-    // Prevent duplicate registration
-    if (isset($users[$email])) {
-        echo "<script>alert('Email already registered. Please sign in.'); window.location.href='index.php';</script>";
+        // Insert new user
+        $insertStmt = $conn->prepare("
+            INSERT INTO users (fullname, email, birthdate, password, onboarding_complete)
+            VALUES (?, ?, ?, ?, ?)
+        ");
+
+        $insertStmt->execute([
+            $fullname,
+            $email,
+            $birthdate,
+            $hashed_password,
+            0
+        ]);
+
+        echo "<script>alert('Registration successful!'); window.location.href='index.php';</script>";
+        exit;
+
+    } catch (PDOException $e) {
+        echo "Registration failed: " . $e->getMessage();
         exit;
     }
-
-    // Save user
-    $users[$email] = [
-        "fullname" => $fullname,
-        "birthdate" => $birthdate,
-        "password" => $hashed_password,
-        "onboarding_complete" => false
-    ];
-
-    file_put_contents($file, json_encode($users, JSON_PRETTY_PRINT));
-
-    // Redirect to index.php with a success message
-    echo "<script>alert('Registration successful!'); window.location.href='index.php';</script>";
-    exit;
 }
 ?>

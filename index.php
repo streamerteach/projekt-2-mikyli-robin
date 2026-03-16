@@ -1,11 +1,7 @@
 <?php
 session_start();
 include 'handy_methods.php';
-
-$file = __DIR__ . "/users.json";
-if (!file_exists($file)) {
-    file_put_contents($file, "{}");
-}
+require_once 'db.php';
 
 $error = "";
 
@@ -14,25 +10,30 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $email = trim($_POST["email"] ?? "");
     $password = $_POST["password"] ?? "";
 
-    $users = json_decode(file_get_contents($file), true);
-    if (!is_array($users)) $users = [];
+    try {
+        $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
+        $stmt->execute([$email]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    // user must exist and password must match the stored hash
-    if (isset($users[$email]) && password_verify($password, $users[$email]["password"])) {
+        if ($user && password_verify($password, $user["password"])) {
 
-        $_SESSION["logged_in"] = true;
-        $_SESSION["email"] = $email;
+            $_SESSION["logged_in"] = true;
+            $_SESSION["email"] = $user["email"];
+            $_SESSION["fullName"] = $user["fullName"] ?? "";
 
-        // First-time setup routing
-        if (empty($users[$email]["onboarding_complete"])) {
-            header("Location: setup.php");
+            if (empty($user["onboarding_complete"])) {
+                header("Location: setup.php");
+            } else {
+                header("Location: home.php");
+            }
+            exit;
+
         } else {
-            header("Location: home.php");
+            $error = "Wrong email or password.";
         }
-        exit;
 
-    } else {
-        $error = "Wrong email or password.";
+    } catch (PDOException $e) {
+        $error = "Login failed: " . $e->getMessage();
     }
 }
 ?>
