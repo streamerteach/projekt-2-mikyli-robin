@@ -270,10 +270,13 @@ body#home header{
 }
 
 body#home .avatar{
-  width: 62px;
-  height: 62px;
-  background: var(--grayLight);
-  border-radius: 50%;
+  width: 72px;
+  height: 72px;
+  background-image: url("images/VCLogo.png");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  border-radius: 100px;
   justify-self: start;
 }
 
@@ -579,7 +582,7 @@ footer {
 }
 
 .reviews-title {
-  color: white;
+  color: #231c7b;
   text-align: center;
   margin-bottom: 30px;
 }

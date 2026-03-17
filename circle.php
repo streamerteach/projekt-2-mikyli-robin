@@ -25,21 +25,22 @@ if (empty($currentUser["onboarding_complete"])) {
   exit;
 }
 
-$allowedLookingFor = ["", "friends", "networking", "relationship"];
-$allowedDatePrefs = ["", "coffee_walk", "dinner_date"];
+$allowedLookingFor = ["", "friends", "networking", "relationship"]; // definierar tillåtna värden för "looking for"
+$allowedDatePrefs = ["", "coffee_walk", "dinner_date"]; // definierar tillåtna värden för "first date preference" filter
 
-$lookingForFilter = $_GET["looking_for"] ?? "";
-$firstDatePrefFilter = $_GET["first_date_pref"] ?? "";
+$lookingForFilter = $_GET["looking_for"] ?? ""; // hämtar filtervärdet för "looking for" från querry string
+$firstDatePrefFilter = $_GET["first_date_pref"] ?? ""; // hämtar filtervärdet för "first date preference" från querry string
 
-if (!in_array($lookingForFilter, $allowedLookingFor, true)) {
+if (!in_array($lookingForFilter, $allowedLookingFor, true)) { //om värdet för "looking for" inte är i listan av tillåtna värden, sätts det till en tom sträng (ingen filter)
   $lookingForFilter = "";
 }
 
-if (!in_array($firstDatePrefFilter, $allowedDatePrefs, true)) {
+if (!in_array($firstDatePrefFilter, $allowedDatePrefs, true)) { //om värdet för "first date preference" inte är i listan av tillåtna värden, sätts det till en tom sträng (ingen filter)
   $firstDatePrefFilter = "";
 }
 
-$sql = "
+/* drar ut matchade användare baserat på filters med en SQL-fråga */
+$sql = " 
   SELECT u.*
   FROM users u
   INNER JOIN matches m
@@ -51,44 +52,45 @@ $sql = "
   WHERE 1 = 1
 ";
 
-$params = [$me, $me];
+$params = [$me, $me]; // parametrar för SQL-frågan, börjar med den inloggade användarens e-postadress två gånger (för user1_email och user2_email i matches-tabellen)
 
-if ($lookingForFilter !== "") {
-  $sql .= " AND u.looking_for = ?";
-  $params[] = $lookingForFilter;
+if ($lookingForFilter !== "") { // Om det finns ett filter för "looking for", lägg till det i SQL-frågan och i parametrarna
+  $sql .= " AND u.looking_for = ?"; // lägger till en condition i SQL-frågan för att filtrera på "looking for"
+  $params[] = $lookingForFilter; // lägger till filtervärdet för "looking for" i parametrarna
 }
 
-if ($firstDatePrefFilter !== "") {
-  $sql .= " AND u.first_date_pref = ?";
-  $params[] = $firstDatePrefFilter;
+if ($firstDatePrefFilter !== "") { // Om det finns ett filter för "first date preference", lägg till det i SQL-frågan och i parametrarna
+  $sql .= " AND u.first_date_pref = ?"; // lägger till en condition i SQL-frågan för att filtrera på "first date preference"
+  $params[] = $firstDatePrefFilter; // lägger till filtervärdet för "first date preference" i parametrarna
 }
 
-$sql .= " ORDER BY u.display_name, u.fullName, u.email";
+$sql .= " ORDER BY u.display_name, u.fullName, u.email"; // sorterar resultaten i SQL-frågan efter display_name, fullName och email
 
-function circle_label_looking_for($value) {
+function circle_label_looking_for($value) { // Funktion för att översätta "looking for" värden till mer användarvänliga etiketter
   $map = [
     "friends" => "Friends",
     "networking" => "Networking",
     "relationship" => "Relationship"
   ];
 
-  return $map[$value] ?? "Not set";
+  return $map[$value] ?? "Not set"; // Om värdet inte finns i mappen, returnera "Not set"
 }
 
-function circle_label_date_pref($value) {
+function circle_label_date_pref($value) { // Funktion för att översätta "first date preference" värden till mer användarvänliga etiketter
   $map = [
     "coffee_walk" => "Coffee / Walk",
     "dinner_date" => "Dinner date"
   ];
 
-  return $map[$value] ?? "";
+  return $map[$value] ?? "Not set"; // Om värdet inte finns i mappen, returnera "Not set"
 }
 
-// Load matched users in one query
+// Laddar matchade användare baserat på den byggda SQL-frågan och parametrarna
 $stmt = $conn->prepare($sql);
 $stmt->execute($params);
 $myMatches = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -127,6 +129,7 @@ $myMatches = $stmt->fetchAll(PDO::FETCH_ASSOC);
   </div>
 </header>
 
+<!--classerna-->
 <main>
   <div class="layout circleLayout">
     <section class="panel circlePanel">
@@ -163,10 +166,11 @@ $myMatches = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
       </form>
 
-      <?php if (count($myMatches) === 0): ?>
+      <?php if (count($myMatches) === 0): ?> <!-- Om det inte finns några matchningar som matchar filtren, visa ett meddelande -->
         <p class="circleEmpty">No matches matched your filters yet.</p>
       <?php else: ?>
-        <div class="matchGrid">
+
+        <div class="matchGrid"> <!-- Om det finns matchningar, visas dom i en grid -->
           <?php foreach ($myMatches as $u):
             $matchEmail = $u["email"] ?? "";
             $name = $u["display_name"] ?? $u["fullName"] ?? $matchEmail;
@@ -179,15 +183,16 @@ $myMatches = $stmt->fetchAll(PDO::FETCH_ASSOC);
               <div class="matchName"><?php echo htmlspecialchars($name); ?></div>
               <div class="matchMeta"><?php echo htmlspecialchars($matchEmail); ?></div>
               <div class="matchTagRow">
-                <span class="matchTag"><?php echo htmlspecialchars($lookingFor); ?></span>
-                <?php if ($firstDatePref !== ""): ?>
-                  <span class="matchTag"><?php echo htmlspecialchars($firstDatePref); ?></span>
-                <?php endif; ?>
+
+                <span class="matchTag"><?php echo htmlspecialchars($lookingFor); ?></span> <!-- Visar "looking for" som en tag -->
+                <?php if ($firstDatePref !== ""): ?> <!-- Om "first date preference" är satt, visa det som en tag -->
+                  <span class="matchTag"><?php echo htmlspecialchars($firstDatePref); ?></span> <!-- Visar "first date preference" som en tag -->
+                <?php endif; ?> <!-- End if för "first date preference" tag -->
               </div>
             </div>
-          <?php endforeach; ?>
+          <?php endforeach; ?> <!-- End foreach för matchningar -->
         </div>
-      <?php endif; ?>
+      <?php endif; ?> <!-- End if för att kolla om det finns matchningar -->
 
     </section>
   </div>

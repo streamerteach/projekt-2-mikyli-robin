@@ -2,12 +2,12 @@
 session_start();
 require_once "db.php";
 
-if (empty($_SESSION["logged_in"])) {
+if (empty($_SESSION["logged_in"])) { // Om användaren inte är inloggad, omdirigerar den till inloggningssidan
   header("Location: index.php");
   exit;
 }
 
-$email = $_SESSION["email"] ?? "";
+$email = $_SESSION["email"] ?? ""; // Hämtar den inloggade användarens e-postadress
 
 $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
 $stmt->execute([$email]);
@@ -18,7 +18,7 @@ if (!$user) {
   exit;
 }
 
-if (empty($user["onboarding_complete"])) {
+if (empty($user["onboarding_complete"])) { // Om användaren inte har slutfört onboarding, omdirigerar den till setup-sidan
   header("Location: setup.php");
   exit;
 }
@@ -89,43 +89,43 @@ if (empty($user["onboarding_complete"])) {
 
   let countdownInterval = null;
 
-  document.getElementById('countdownBtn').addEventListener('click', function() {
-    const dateInput = document.getElementById('dateInput').value;
-    const display = document.getElementById('countdownDisplay');
+  document.getElementById("countdownBtn").addEventListener("click", function() {  //när knappen klickas, startas nedräkningen
+    const dateInput = document.getElementById("dateInput").value; //hämtar datumet från inputfältet
+    const display = document.getElementById("countdownDisplay"); //hämtar elementet där nedräkningen ska visas
 
-    const datePattern = /^(\d{2})-(\d{2})-(\d{4})$/;
-    const match = dateInput.match(datePattern);
+    const datePattern = /^(\d{2})-(\d{2})-(\d{4})$/; // för att validera datumformatet DD-MM-YYYY
+    const match = dateInput.match(datePattern); //matchar det inskrivna datumet mot mönstret
 
     if (!match) {
-      display.textContent = 'Ogiltigt format! Använd DD-MM-YYYY';
-      display.style.color = '#ffffff';
+      display.textContent = "Invalid format! Use DD-MM-YYYY"; // Om formatet är ogiltigt, visar det ett felmeddelande
+      display.style.color = "#ffffff";
       return;
     }
 
-    const day = parseInt(match[1]);
-    const month = parseInt(match[2]) - 1;
-    const year = parseInt(match[3]);
+    const day = parseInt(match[1]); // drar ut dag, månad och år från det inskrivna datumet
+    const month = parseInt(match[2]) - 1; // javasript måndar är 0-indexerade, så vi det tas -1
+    const year = parseInt(match[3]); // drar ut året
 
-    const targetDate = new Date(year, month, day, 23, 59, 59);
+    const targetDate = new Date(year, month, day, 23, 59, 59); // skapar ett datumobjekt för det inskrivna datumet, sätter tiden till 23:59:59 för att räkna ned till slutet av dagen
 
-    if (isNaN(targetDate.getTime())) {
-      display.textContent = 'Ogiltigt datum!';
-      display.style.color = '#ff4444';
+    if (isNaN(targetDate.getTime())) { // Om det skapade datumet är ogiltigt, visar det ett felmeddelande
+      display.textContent = "Invalid date!";
+      display.style.color = "#ff4444";
       return;
     }
 
-    if (countdownInterval) {
+    if (countdownInterval) { // Om det redan finns en nedräkning igång, rensar den innan den startar en ny
       clearInterval(countdownInterval);
     }
 
-    countdownInterval = setInterval(function() {
+    countdownInterval = setInterval(function() { // Startar en nedräkning som uppdateras varje sekund
       const now = new Date().getTime();
       const distance = targetDate - now;
 
-      if (distance < 0) {
+      if (distance < 0) { // När nedräkningen är slut, visar den ett meddelande och stoppar nedräkningen
         clearInterval(countdownInterval);
-        display.textContent = 'Datumet har passerat!';
-        display.style.color = '#ff4444';
+        display.textContent = "The date has passed!";
+        display.style.color = "#ff4444";
         return;
       }
 
@@ -134,8 +134,8 @@ if (empty($user["onboarding_complete"])) {
       const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-      display.textContent = days + 'd ' + hours + 'h ' + minutes + 'm ' + seconds + 's';
-      display.style.color = '#ffffff';
+      display.textContent = days + "d " + hours + "h " + minutes + "m " + seconds + "s"; // Uppdaterar nedräkningen i display-elementet
+      display.style.color = "#ffffff";
     }, 1000);
   });
 </script>

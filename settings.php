@@ -166,32 +166,30 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && ($_POST["action"] ?? "save_profile"
   }
 }
 
-/* =========================
-   POST: delete profile
-   ========================= */
-if ($_SERVER["REQUEST_METHOD"] === "POST" && ($_POST["action"] ?? "") === "delete_profile") {
-  $deletePassword = $_POST["delete_password"] ?? "";
+/* ========================= POST: ta bort profilen ========================= */
+if ($_SERVER["REQUEST_METHOD"] === "POST" && ($_POST["action"] ?? "") === "delete_profile") { // Hanterar när användaren vill ta bort sin profil
+  $deletePassword = $_POST["delete_password"] ?? ""; // Hämtar lösenordet som användaren skrev in i formuläret för att bekräfta borttagning av profil
 
-  if ($deletePassword === "") {
+  if ($deletePassword === "") { // Om inget lösenord skrevs in, sätts ett felmeddelande som säger att användaren måste ange sitt lösenord för att ta bort profilen
     $deleteError = "Enter your password to remove your profile.";
-  } elseif (empty($user["password"]) || !password_verify($deletePassword, $user["password"])) {
+  } elseif (empty($user["password"]) || !password_verify($deletePassword, $user["password"])) { // Om det angivna lösenordet inte matchar det som finns i databasen för den inloggade användaren, sätts ett felmeddelande som säger att lösenordet är fel och att profilen inte togs bort
     $deleteError = "Wrong password. Profile was not removed.";
   } else {
-    $oldPrimary = $user["profile_picture"] ?? "";
+    $oldPrimary = $user["profile_picture"] ?? ""; // Hämtar den gamla profilbildens sökväg från databasen för att kunna ta bort den från servern efter att profilen har tagits bort
 
-    $stmt = $conn->prepare("DELETE FROM users WHERE email = ?");
-    $stmt->execute([$email]);
+    $stmt = $conn->prepare("DELETE FROM users WHERE email = ?"); // Förbereder en SQL-fråga för att ta bort användaren från databasen baserat på deras e-postadress
+    $stmt->execute([$email]); // Kör SQL-frågan med den inloggade användarens e-postadress som parameter för att ta bort deras profil från databasen
 
-    if (!empty($oldPrimary)) {
-      delete_upload_file_if_safe($oldPrimary);
+    if (!empty($oldPrimary)) { // Om det fanns en profilbild för användaren, och den inte är tom så försöker den ta bort bilden
+      delete_upload_file_if_safe($oldPrimary); // Anropar funktionen delete_upload_file_if_safe för att ta bort den gamla profilbilden från servern,
     }
 
     $_SESSION = [];
-    if (session_status() === PHP_SESSION_ACTIVE) {
+    if (session_status() === PHP_SESSION_ACTIVE) { // Om sessionen är aktiv, förstör den för att logga ut användaren efter att deras profil har tagits bort
       session_destroy();
     }
 
-    header("Location: index.php");
+    header("Location: index.php"); // Omdirigerar användaren till startsidan efter att deras profil har tagits bort
     exit;
   }
 }
@@ -261,7 +259,6 @@ if ($flashSaved) {
     </div>
 
     <div class="menuDropdown" id="menuDropdown" aria-label="User menu">
-      <a class="menuItem" href="setup.php">Setup</a>
       <a class="menuItem" href="reviews.php">Leave a Review</a>
       <a class="menuItem" href="rapporten.html">Rapporten</a>
       <a class="menuItem logout" href="logout.php">Logout</a>
@@ -355,6 +352,7 @@ if ($flashSaved) {
 
     </div>
 
+    <!--"Remove profile" section-->
     <section class="deleteProfileSection">
       <button
         type="button"
@@ -455,15 +453,15 @@ if ($flashSaved) {
     })();
   </script>
 
-  <script>
+  <script> // script för att hantera öppning och stängning av panelen för att ta bort profilen
     (function(){
-      const toggleBtn = document.getElementById('toggleDeletePanelBtn');
-      const panel = document.getElementById('deleteProfilePanel');
+      const toggleBtn = document.getElementById("toggleDeletePanelBtn");
+      const panel = document.getElementById("deleteProfilePanel");
       if (!toggleBtn || !panel) return;
 
-      toggleBtn.addEventListener('click', function(){
-        const isOpen = panel.classList.toggle('is-open');
-        toggleBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      toggleBtn.addEventListener("click", function(){
+        const isOpen = panel.classList.toggle("is-open");
+        toggleBtn.setAttribute("aria-expanded", isOpen ? "true" : "false");
       });
     })();
   </script>
