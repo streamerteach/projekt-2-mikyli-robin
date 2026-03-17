@@ -25,8 +25,21 @@ if (empty($currentUser["onboarding_complete"])) {
   exit;
 }
 
-// Load matched users in one query
-$stmt = $conn->prepare("
+$allowedLookingFor = ["", "friends", "networking", "relationship"];
+$allowedDatePrefs = ["", "coffee_walk", "dinner_date"];
+
+$lookingForFilter = $_GET["looking_for"] ?? "";
+$firstDatePrefFilter = $_GET["first_date_pref"] ?? "";
+
+if (!in_array($lookingForFilter, $allowedLookingFor, true)) {
+  $lookingForFilter = "";
+}
+
+if (!in_array($firstDatePrefFilter, $allowedDatePrefs, true)) {
+  $firstDatePrefFilter = "";
+}
+
+$sql = "
   SELECT u.*
   FROM users u
   INNER JOIN matches m
@@ -35,9 +48,45 @@ $stmt = $conn->prepare("
       OR
       (m.user2_email = ? AND m.user1_email = u.email)
     )
-  ORDER BY u.display_name, u.fullName, u.email
-");
-$stmt->execute([$me, $me]);
+  WHERE 1 = 1
+";
+
+$params = [$me, $me];
+
+if ($lookingForFilter !== "") {
+  $sql .= " AND u.looking_for = ?";
+  $params[] = $lookingForFilter;
+}
+
+if ($firstDatePrefFilter !== "") {
+  $sql .= " AND u.first_date_pref = ?";
+  $params[] = $firstDatePrefFilter;
+}
+
+$sql .= " ORDER BY u.display_name, u.fullName, u.email";
+
+function circle_label_looking_for($value) {
+  $map = [
+    "friends" => "Friends",
+    "networking" => "Networking",
+    "relationship" => "Relationship"
+  ];
+
+  return $map[$value] ?? "Not set";
+}
+
+function circle_label_date_pref($value) {
+  $map = [
+    "coffee_walk" => "Coffee / Walk",
+    "dinner_date" => "Dinner date"
+  ];
+
+  return $map[$value] ?? "";
+}
+
+// Load matched users in one query
+$stmt = $conn->prepare($sql);
+$stmt->execute($params);
 $myMatches = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <!DOCTYPE html>
@@ -49,7 +98,7 @@ $myMatches = $stmt->fetchAll(PDO::FETCH_ASSOC);
   <link rel="stylesheet" href="styles.css">
 </head>
 
-<body id="home" style="background-image: url('images/VCbackground.png');">
+<body id="home" class="circlePage" style="background-image: url('images/VCbackground.png');">
 
 <header>
   <div class="avatar" aria-label="Profile"></div>
@@ -79,23 +128,62 @@ $myMatches = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </header>
 
 <main>
-  <div class="layout" style="grid-template-columns: 1fr; max-width: 1100px;">
-    <section class="panel" style="padding: 22px;">
-      <h2 style="margin-bottom: 14px;">Your matches</h2>
+  <div class="layout circleLayout">
+    <section class="panel circlePanel">
+      <div class="circleHeaderRow">
+        <h2 class="circleHeading">Your matches</h2>
+        <span class="circleCount"><?php echo count($myMatches); ?> result<?php echo count($myMatches) === 1 ? "" : "s"; ?></span>
+      </div>
+
+      <form method="get" class="circleFilters">
+        <div class="circleFilterRow">
+          <div class="circleField">
+            <label for="looking_for">Looking for</label>
+            <select id="looking_for" name="looking_for">
+              <option value="">All</option>
+              <option value="friends" <?php echo $lookingForFilter === "friends" ? "selected" : ""; ?>>Friends</option>
+              <option value="networking" <?php echo $lookingForFilter === "networking" ? "selected" : ""; ?>>Networking</option>
+              <option value="relationship" <?php echo $lookingForFilter === "relationship" ? "selected" : ""; ?>>Relationship</option>
+            </select>
+          </div>
+
+          <div class="circleField">
+            <label for="first_date_pref">First date preference</label>
+            <select id="first_date_pref" name="first_date_pref">
+              <option value="">All</option>
+              <option value="coffee_walk" <?php echo $firstDatePrefFilter === "coffee_walk" ? "selected" : ""; ?>>Coffee / Walk</option>
+              <option value="dinner_date" <?php echo $firstDatePrefFilter === "dinner_date" ? "selected" : ""; ?>>Dinner date</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="circleFilterActions">
+          <button type="submit" class="circleApplyBtn">Apply filters</button>
+          <a href="circle.php" class="circleResetLink">Reset</a>
+        </div>
+      </form>
 
       <?php if (count($myMatches) === 0): ?>
-        <p style="opacity:0.85;">No matches yet. Test: like each other from two accounts.</p>
+        <p class="circleEmpty">No matches matched your filters yet.</p>
       <?php else: ?>
         <div class="matchGrid">
           <?php foreach ($myMatches as $u):
             $matchEmail = $u["email"] ?? "";
             $name = $u["display_name"] ?? $u["fullName"] ?? $matchEmail;
             $photo = $u["profile_picture"] ?? "";
+            $lookingFor = circle_label_looking_for($u["looking_for"] ?? "");
+            $firstDatePref = circle_label_date_pref($u["first_date_pref"] ?? "");
           ?>
             <div class="matchCard">
               <div class="matchPhoto" style="<?php echo $photo ? "background-image:url('".htmlspecialchars($photo)."');" : ""; ?>"></div>
               <div class="matchName"><?php echo htmlspecialchars($name); ?></div>
               <div class="matchMeta"><?php echo htmlspecialchars($matchEmail); ?></div>
+              <div class="matchTagRow">
+                <span class="matchTag"><?php echo htmlspecialchars($lookingFor); ?></span>
+                <?php if ($firstDatePref !== ""): ?>
+                  <span class="matchTag"><?php echo htmlspecialchars($firstDatePref); ?></span>
+                <?php endif; ?>
+              </div>
             </div>
           <?php endforeach; ?>
         </div>
