@@ -119,13 +119,13 @@ if ($firstDatePrefKey !== "") {
 </script>
 
 <div id="countdown">
-  <h2>Time to find your valentine's date:</h2>
+  <h2>Time to find your valentine's dates:</h2>
   <p id="timer"></p>
 </div>
 
 <script>
   //sätter datumet för valentines day
-  const valentineDate = new Date(new Date().getFullYear(), 1, 14, 0, 0, 0).getTime();
+  const valentineDate = new Date(2027, 1, 14, 0, 0, 0).getTime();
 
   // Uppdaterar nedräkningen varje sekund
   const countdownInterval = setInterval(() => {
@@ -162,6 +162,9 @@ if ($firstDatePrefKey !== "") {
   <?php endif; ?>
   <p><strong>Age range:</strong> <?php echo htmlspecialchars($ageMin); ?> to <?php echo htmlspecialchars($ageMax); ?></p>
   <p><strong>Short bio:</strong> <?php echo nl2br(htmlspecialchars($bio)); ?></p>
+  <div class="profile-manage-wrap">
+    <a href="settings.php" class="login-button profile-manage-link">Manage profile</a>
+  </div>
 </div>
 
 </body>

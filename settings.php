@@ -11,6 +11,7 @@ if (empty($_SESSION["logged_in"]) || empty($_SESSION["email"])) {
 $email = $_SESSION["email"];
 $error = "";
 $success = "";
+$deleteError = "";
 
 /* ensure uploads folder exists */
 function ensure_upload_dir($dir) {
@@ -92,7 +93,7 @@ if (!$user) {
 /* =========================
    POST: save profile fields
    ========================= */
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
+if ($_SERVER["REQUEST_METHOD"] === "POST" && ($_POST["action"] ?? "save_profile") === "save_profile") {
 
   $display_name = trim($_POST["display_name"] ?? "");
   $city = trim($_POST["city"] ?? "");
@@ -165,6 +166,36 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
   }
 }
 
+/* =========================
+   POST: delete profile
+   ========================= */
+if ($_SERVER["REQUEST_METHOD"] === "POST" && ($_POST["action"] ?? "") === "delete_profile") {
+  $deletePassword = $_POST["delete_password"] ?? "";
+
+  if ($deletePassword === "") {
+    $deleteError = "Enter your password to remove your profile.";
+  } elseif (empty($user["password"]) || !password_verify($deletePassword, $user["password"])) {
+    $deleteError = "Wrong password. Profile was not removed.";
+  } else {
+    $oldPrimary = $user["profile_picture"] ?? "";
+
+    $stmt = $conn->prepare("DELETE FROM users WHERE email = ?");
+    $stmt->execute([$email]);
+
+    if (!empty($oldPrimary)) {
+      delete_upload_file_if_safe($oldPrimary);
+    }
+
+    $_SESSION = [];
+    if (session_status() === PHP_SESSION_ACTIVE) {
+      session_destroy();
+    }
+
+    header("Location: index.php");
+    exit;
+  }
+}
+
 /* reload latest user after possible POST redirect flow */
 $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
 $stmt->execute([$email]);
@@ -185,6 +216,7 @@ $first_date_pref = $user["first_date_pref"] ?? "";
 /* flash message */
 $flashSaved = !empty($_SESSION["flash_saved"]);
 unset($_SESSION["flash_saved"]);
+$showDeletePanel = $deleteError !== "";
 
 if ($flashSaved) {
   $success = "Saved.";
@@ -264,6 +296,7 @@ if ($flashSaved) {
       </section>
 
       <form method="post" enctype="multipart/form-data" id="settingsForm">
+        <input type="hidden" name="action" value="save_profile">
         <input type="file" id="primaryPhotoInput" name="primary_photo" accept="image/*" class="hiddenUpload">
 
         <section class="panel panelRight">
@@ -321,6 +354,40 @@ if ($flashSaved) {
       </form>
 
     </div>
+
+    <section class="deleteProfileSection">
+      <button
+        type="button"
+        class="btnDanger"
+        id="toggleDeletePanelBtn"
+        aria-expanded="<?= $showDeletePanel ? "true" : "false" ?>"
+        aria-controls="deleteProfilePanel"
+      >
+        REMOVE PROFILE
+      </button>
+
+      <div id="deleteProfilePanel" class="deleteProfilePanel<?= $showDeletePanel ? " is-open" : "" ?>">
+        <div class="deletePanelInner glass">
+          <h3 class="deletePanelTitle">Remove profile</h3>
+          <p class="deletePanelText">To remove your profile, first verify your password. Accounts cannot be recovered after deletion.</p>
+
+          <?php if ($deleteError): ?>
+            <div class="notice deletePanelNotice"><?= htmlspecialchars($deleteError) ?></div>
+          <?php endif; ?>
+
+          <form method="post" class="deletePanelForm">
+            <input type="hidden" name="action" value="delete_profile">
+
+            <label class="fieldLabel" for="delete_password">Password</label>
+            <input class="fieldInput" id="delete_password" name="delete_password" type="password" placeholder="Enter your password" required>
+
+            <div class="deletePanelActions">
+              <button class="btnDanger deleteConfirmBtn" type="submit">Confirm deletion</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
   </main>
 
   <script>
@@ -385,6 +452,19 @@ if ($flashSaved) {
 
       setTimeout(() => el.classList.add('hide'), 2500);
       setTimeout(() => { try { el.remove(); } catch(e){} }, 3000);
+    })();
+  </script>
+
+  <script>
+    (function(){
+      const toggleBtn = document.getElementById('toggleDeletePanelBtn');
+      const panel = document.getElementById('deleteProfilePanel');
+      if (!toggleBtn || !panel) return;
+
+      toggleBtn.addEventListener('click', function(){
+        const isOpen = panel.classList.toggle('is-open');
+        toggleBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      });
     })();
   </script>
 

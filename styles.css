@@ -175,6 +175,30 @@ body {
     margin: 10px 0;
 }
 
+.profile-box .profile-manage-wrap {
+  margin-top: 24px;
+  display: flex;
+  justify-content: center;
+}
+
+.profile-box .profile-manage-link {
+  display: inline-block;
+  width: auto;
+  padding: 12px 28px;
+  margin-bottom: 0;
+  text-decoration: none;
+  text-align: center;
+  background-color: #4e54c8;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+.profile-box .profile-manage-link:hover {
+  background-color: #3b3f8f;
+}
+
 #countdown {
     display: flex; 
     flex-direction: column; 
@@ -781,4 +805,183 @@ body#home.page-settings .panel{
 
 .addPhotoBtnInside:hover {
   background: rgba(0,0,0,0.5);
+}
+
+/* CIRCLES PAGENS filtreringsystem styling*/
+
+.circleLayout {
+  grid-template-columns: minmax(320px, 520px) 1fr !important;
+  max-width: 1100px;
+  align-items: start;
+}
+
+body#home.circlePage main {
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 28px 20px 80px 28px;
+}
+
+body#home.circlePage .circleLayout {
+  width: min(1200px, 100%);
+  max-width: 1200px;
+  margin: 0;
+  justify-content: start;
+}
+
+.circlePanel {
+  padding: 22px;
+  grid-column: 1;
+}
+
+.circleHeaderRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.circleHeading {
+  margin: 0;
+}
+
+.circleCount {
+  opacity: 0.85;
+}
+
+.circleFilters {
+  margin-bottom: 22px;
+  padding: 18px;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+}
+
+.circleFilterRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.circleField label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.circleField select {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.18);
+  background: rgba(0,0,0,0.22);
+  color: #fff;
+  font-size: 15px;
+}
+
+.circleFilterActions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.circleApplyBtn,
+.circleResetLink {
+  border-radius: 999px;
+  padding: 10px 20px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.circleApplyBtn {
+  border: none;
+  background: #6cff6c;
+  color: #000;
+  cursor: pointer;
+}
+
+.circleResetLink {
+  background: rgba(255,255,255,0.12);
+  color: #fff;
+}
+
+.circleEmpty {
+  opacity: 0.85;
+}
+
+.matchGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.matchCard {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.matchPhoto {
+  height: 220px;
+  background-color: rgba(0,0,0,0.2);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.matchName,
+.matchMeta,
+.matchTagRow {
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+.matchName {
+  padding-top: 16px;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.matchMeta {
+  padding-top: 6px;
+  color: rgba(255,255,255,0.74);
+}
+
+.matchTagRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 12px;
+  padding-bottom: 16px;
+}
+
+.matchTag {
+  border-radius: 999px;
+  padding: 6px 10px;
+  background: rgba(255,255,255,0.12);
+  color: #fff;
+  font-size: 13px;
+}
+
+@media (max-width: 900px) {
+  body#home.circlePage main {
+    padding: 20px 14px 60px;
+  }
+
+  body#home.circlePage .circleLayout {
+    width: 100%;
+  }
+
+  .circleFilterRow,
+  .matchGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .circleHeaderRow {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
