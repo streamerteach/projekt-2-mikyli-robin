@@ -104,6 +104,7 @@ $selectedName = $selectedMatch
   ? ($selectedMatch["display_name"] ?? $selectedMatch["fullName"] ?? $selectedMatch["email"])
   : "";
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -113,6 +114,7 @@ $selectedName = $selectedMatch
   <link rel="stylesheet" href="styles.css">
 </head>
 
+<body id="home" class="circlePage" style="background-image: url('images/VCbackground.png');">
 <body id="home" class="circlePage" style="background-image: url('images/VCbackground.png');">
 
 <header>
@@ -142,6 +144,7 @@ $selectedName = $selectedMatch
   </div>
 </header>
 
+<!--classerna-->
 <main>
   <div class="layout circleLayoutTwoColumn">
 

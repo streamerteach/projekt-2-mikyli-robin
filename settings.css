@@ -83,6 +83,11 @@ body#home.page-settings main{
 }
 .notice.ok{ border-color: rgba(108,255,108,0.45); }
 
+.deletePanelNotice{
+  width: 100%;
+  margin: 0 0 14px;
+}
+
 /* centered notice (success flash) */
 .notice.centered{
   position: fixed;
@@ -243,6 +248,84 @@ body#home.page-settings main{
   transform: translateY(-1px) scale(0.97);
   box-shadow: 0 6px 16px rgba(0,0,0,.2);
   cursor: pointer !important;
+}
+
+.deleteProfileSection{
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 24px 0 10px;
+}
+
+.btnDanger{
+  background: #ff3b3b;
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 14px 28px;
+  font-weight: 900;
+  letter-spacing: .4px;
+  cursor: pointer;
+  box-shadow: 0 10px 24px rgba(0,0,0,.25);
+  transition: all 0.3s ease;
+}
+
+.btnDanger:hover{
+  transform: translateY(-3px) scale(1.04);
+  box-shadow: 0 16px 36px rgba(0,0,0,.35);
+}
+
+.btnDanger:active{
+  transform: translateY(-1px) scale(0.98);
+  box-shadow: 0 6px 16px rgba(0,0,0,.2);
+}
+
+.deleteProfilePanel{
+  display: none;
+  width: min(560px, calc(100% - 40px));
+  margin-top: 18px;
+}
+
+.deleteProfilePanel.is-open{
+  display: block;
+}
+
+.deletePanelInner{
+  border-radius: 22px;
+  padding: 22px;
+  border: 1px solid rgba(255,90,90,0.34);
+  background: rgba(40, 10, 10, 0.36);
+}
+
+.deletePanelTitle{
+  font-size: 24px;
+  font-weight: 900;
+  margin-bottom: 10px;
+  color: #0f0a8c;
+  text-align: center;
+}
+
+.deletePanelText{
+  text-align: center;
+  color: rgba(255,255,255,0.88);
+  line-height: 1.5;
+  margin-bottom: 18px;
+}
+
+.deletePanelForm{
+  display: flex;
+  flex-direction: column;
+}
+
+.deletePanelActions{
+  display: flex;
+  justify-content: center;
+  margin-top: 18px;
+}
+
+.deleteConfirmBtn{
+  background: #d92c2c;
 }
 
 /* hide real file input */

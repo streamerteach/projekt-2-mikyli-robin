@@ -199,6 +199,30 @@ body {
   background-color: #3b3f8f;
 }
 
+.profile-box .profile-manage-wrap {
+  margin-top: 24px;
+  display: flex;
+  justify-content: center;
+}
+
+.profile-box .profile-manage-link {
+  display: inline-block;
+  width: auto;
+  padding: 12px 28px;
+  margin-bottom: 0;
+  text-decoration: none;
+  text-align: center;
+  background-color: #4e54c8;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+.profile-box .profile-manage-link:hover {
+  background-color: #3b3f8f;
+}
+
 #countdown {
     display: flex; 
     flex-direction: column; 
@@ -270,6 +294,13 @@ body#home header{
 }
 
 body#home .avatar{
+  width: 72px;
+  height: 72px;
+  background-image: url("images/VCLogo.png");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  border-radius: 100px;
   width: 72px;
   height: 72px;
   background-image: url("images/VCLogo.png");
@@ -582,6 +613,7 @@ footer {
 }
 
 .reviews-title {
+  color: #231c7b;
   color: #231c7b;
   text-align: center;
   margin-bottom: 30px;

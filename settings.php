@@ -11,6 +11,7 @@ if (empty($_SESSION["logged_in"]) || empty($_SESSION["email"])) {
 $email = $_SESSION["email"];
 $error = "";
 $success = "";
+$deleteError = "";
 
 /* ensure uploads folder exists */
 function ensure_upload_dir($dir) {
@@ -92,7 +93,7 @@ if (!$user) {
 /* =========================
    POST: save profile fields
    ========================= */
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
+if ($_SERVER["REQUEST_METHOD"] === "POST" && ($_POST["action"] ?? "save_profile") === "save_profile") {
 
   $display_name = trim($_POST["display_name"] ?? "");
   $city = trim($_POST["city"] ?? "");
@@ -165,6 +166,34 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
   }
 }
 
+/* ========================= POST: ta bort profilen ========================= */
+if ($_SERVER["REQUEST_METHOD"] === "POST" && ($_POST["action"] ?? "") === "delete_profile") { // Hanterar när användaren vill ta bort sin profil
+  $deletePassword = $_POST["delete_password"] ?? ""; // Hämtar lösenordet som användaren skrev in i formuläret för att bekräfta borttagning av profil
+
+  if ($deletePassword === "") { // Om inget lösenord skrevs in, sätts ett felmeddelande som säger att användaren måste ange sitt lösenord för att ta bort profilen
+    $deleteError = "Enter your password to remove your profile.";
+  } elseif (empty($user["password"]) || !password_verify($deletePassword, $user["password"])) { // Om det angivna lösenordet inte matchar det som finns i databasen för den inloggade användaren, sätts ett felmeddelande som säger att lösenordet är fel och att profilen inte togs bort
+    $deleteError = "Wrong password. Profile was not removed.";
+  } else {
+    $oldPrimary = $user["profile_picture"] ?? ""; // Hämtar den gamla profilbildens sökväg från databasen för att kunna ta bort den från servern efter att profilen har tagits bort
+
+    $stmt = $conn->prepare("DELETE FROM users WHERE email = ?"); // Förbereder en SQL-fråga för att ta bort användaren från databasen baserat på deras e-postadress
+    $stmt->execute([$email]); // Kör SQL-frågan med den inloggade användarens e-postadress som parameter för att ta bort deras profil från databasen
+
+    if (!empty($oldPrimary)) { // Om det fanns en profilbild för användaren, och den inte är tom så försöker den ta bort bilden
+      delete_upload_file_if_safe($oldPrimary); // Anropar funktionen delete_upload_file_if_safe för att ta bort den gamla profilbilden från servern,
+    }
+
+    $_SESSION = [];
+    if (session_status() === PHP_SESSION_ACTIVE) { // Om sessionen är aktiv, förstör den för att logga ut användaren efter att deras profil har tagits bort
+      session_destroy();
+    }
+
+    header("Location: index.php"); // Omdirigerar användaren till startsidan efter att deras profil har tagits bort
+    exit;
+  }
+}
+
 /* reload latest user after possible POST redirect flow */
 $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
 $stmt->execute([$email]);
@@ -185,6 +214,7 @@ $first_date_pref = $user["first_date_pref"] ?? "";
 /* flash message */
 $flashSaved = !empty($_SESSION["flash_saved"]);
 unset($_SESSION["flash_saved"]);
+$showDeletePanel = $deleteError !== "";
 
 if ($flashSaved) {
   $success = "Saved.";
@@ -229,7 +259,6 @@ if ($flashSaved) {
     </div>
 
     <div class="menuDropdown" id="menuDropdown" aria-label="User menu">
-      <a class="menuItem" href="setup.php">Setup</a>
       <a class="menuItem" href="reviews.php">Leave a Review</a>
       <a class="menuItem" href="rapporten.html">Rapporten</a>
       <a class="menuItem logout" href="logout.php">Logout</a>
@@ -264,6 +293,7 @@ if ($flashSaved) {
       </section>
 
       <form method="post" enctype="multipart/form-data" id="settingsForm">
+        <input type="hidden" name="action" value="save_profile">
         <input type="file" id="primaryPhotoInput" name="primary_photo" accept="image/*" class="hiddenUpload">
 
         <section class="panel panelRight">
@@ -321,6 +351,41 @@ if ($flashSaved) {
       </form>
 
     </div>
+
+    <!--"Remove profile" section-->
+    <section class="deleteProfileSection">
+      <button
+        type="button"
+        class="btnDanger"
+        id="toggleDeletePanelBtn"
+        aria-expanded="<?= $showDeletePanel ? "true" : "false" ?>"
+        aria-controls="deleteProfilePanel"
+      >
+        REMOVE PROFILE
+      </button>
+
+      <div id="deleteProfilePanel" class="deleteProfilePanel<?= $showDeletePanel ? " is-open" : "" ?>">
+        <div class="deletePanelInner glass">
+          <h3 class="deletePanelTitle">Remove profile</h3>
+          <p class="deletePanelText">To remove your profile, first verify your password. Accounts cannot be recovered after deletion.</p>
+
+          <?php if ($deleteError): ?>
+            <div class="notice deletePanelNotice"><?= htmlspecialchars($deleteError) ?></div>
+          <?php endif; ?>
+
+          <form method="post" class="deletePanelForm">
+            <input type="hidden" name="action" value="delete_profile">
+
+            <label class="fieldLabel" for="delete_password">Password</label>
+            <input class="fieldInput" id="delete_password" name="delete_password" type="password" placeholder="Enter your password" required>
+
+            <div class="deletePanelActions">
+              <button class="btnDanger deleteConfirmBtn" type="submit">Confirm deletion</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
   </main>
 
   <script>
@@ -385,6 +450,19 @@ if ($flashSaved) {
 
       setTimeout(() => el.classList.add('hide'), 2500);
       setTimeout(() => { try { el.remove(); } catch(e){} }, 3000);
+    })();
+  </script>
+
+  <script> // script för att hantera öppning och stängning av panelen för att ta bort profilen
+    (function(){
+      const toggleBtn = document.getElementById("toggleDeletePanelBtn");
+      const panel = document.getElementById("deleteProfilePanel");
+      if (!toggleBtn || !panel) return;
+
+      toggleBtn.addEventListener("click", function(){
+        const isOpen = panel.classList.toggle("is-open");
+        toggleBtn.setAttribute("aria-expanded", isOpen ? "true" : "false");
+      });
     })();
   </script>
 
