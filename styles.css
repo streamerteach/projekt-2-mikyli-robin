@@ -175,6 +175,30 @@ body {
     margin: 10px 0;
 }
 
+.profile-box .profile-manage-wrap {
+  margin-top: 24px;
+  display: flex;
+  justify-content: center;
+}
+
+.profile-box .profile-manage-link {
+  display: inline-block;
+  width: auto;
+  padding: 12px 28px;
+  margin-bottom: 0;
+  text-decoration: none;
+  text-align: center;
+  background-color: #4e54c8;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+.profile-box .profile-manage-link:hover {
+  background-color: #3b3f8f;
+}
+
 #countdown {
     display: flex; 
     flex-direction: column; 
@@ -246,10 +270,13 @@ body#home header{
 }
 
 body#home .avatar{
-  width: 62px;
-  height: 62px;
-  background: var(--grayLight);
-  border-radius: 50%;
+  width: 72px;
+  height: 72px;
+  background-image: url("images/VCLogo.png");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  border-radius: 100px;
   justify-self: start;
 }
 
@@ -555,7 +582,7 @@ footer {
 }
 
 .reviews-title {
-  color: white;
+  color: #231c7b;
   text-align: center;
   margin-bottom: 30px;
 }
@@ -781,4 +808,606 @@ body#home.page-settings .panel{
 
 .addPhotoBtnInside:hover {
   background: rgba(0,0,0,0.5);
+}
+
+/* CIRCLES PAGENS filtreringsystem styling */
+
+/* =========================
+   PAGE + MAIN LAYOUT
+========================= */
+
+body#home.circlePage main {
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 28px 20px 80px 28px;
+}
+
+.circlePage {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.circleLayout {
+  display: grid;
+  grid-template-columns: 420px minmax(0, 1fr) !important;
+  width: 100%;
+  max-width: none;
+  align-items: start;
+}
+
+body#home.circlePage .circleLayout {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  justify-content: start;
+}
+
+.circleLayoutTwoColumn {
+  display: grid;
+  grid-template-columns: 420px minmax(0, 1fr);
+  gap: 28px;
+  align-items: stretch;
+  width: 100%;
+}
+
+/* =========================
+   TYPOGRAPHY
+========================= */
+
+.circleHeading,
+.chatHeading,
+.circleCount,
+.chatSelectedUser,
+.circleField label,
+.circleEmpty,
+.chatPlaceholder,
+.matchName,
+.matchTag {
+  color: #ffffff;
+}
+
+.circleHeading {
+  margin: 0;
+}
+
+.circleCount,
+.circleEmpty,
+.chatPlaceholder,
+.matchTag {
+  opacity: 0.88;
+}
+
+.chatHeading {
+  margin: 0;
+  color: white;
+  font-size: 2rem;
+  letter-spacing: 1px;
+}
+
+.chatSelectedUser {
+  color: #ffffff;
+  margin-bottom: 14px;
+  font-size: 16px;
+}
+
+/* =========================
+   MAIN GLASS PANELS
+========================= */
+
+.matchesPanel,
+.circleChatPanel {
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 26px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+
+  backdrop-filter: blur(22px) saturate(180%);
+  -webkit-backdrop-filter: blur(22px) saturate(180%);
+
+  box-shadow:
+    0 10px 40px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+
+  height: 920px;
+  min-height: 920px;
+  max-height: 920px;
+  overflow: hidden;
+}
+
+/* =========================
+   LEFT PANEL
+========================= */
+
+.matchesPanel {
+  padding: 20px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.circleHeaderRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 14px;
+  flex-shrink: 0;
+}
+
+.circleFilters {
+  margin-bottom: 22px;
+  padding: 18px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  flex-shrink: 0;
+}
+
+.circleFilterRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.circleField label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.circleField select {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+  font-size: 15px;
+
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.circleField select:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.34);
+  box-shadow:
+    0 0 0 3px rgba(255, 255, 255, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+
+.circleField select option {
+  color: #111;
+}
+
+.circleFilterActions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.circleApplyBtn,
+.circleResetLink {
+  border-radius: 999px;
+  padding: 10px 20px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.circleApplyBtn {
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.16);
+  color: #ffffff;
+  cursor: pointer;
+
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+
+  box-shadow:
+    0 6px 18px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+
+  transition: transform 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+}
+
+.circleApplyBtn:hover {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.circleResetLink {
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.circleEmpty {
+  opacity: 0.85;
+}
+
+/* =========================
+   MATCH LIST
+========================= */
+
+.matchList {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  align-content: start;
+  padding-top: 8px;
+  padding-right: 4px;
+}
+
+.matchCard {
+  min-height: 210px;
+  padding: 14px 10px 12px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  text-align: center;
+
+  background: rgba(255, 255, 255, 0.10);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(18px) saturate(180%);
+  -webkit-backdrop-filter: blur(18px) saturate(180%);
+  border-radius: 18px;
+
+  box-shadow:
+    0 6px 18px rgba(0, 0, 0, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+  transform: none;
+}
+
+.matchCard:hover {
+  transform: none;
+  border-color: rgba(255, 255, 255, 0.28);
+  box-shadow:
+    0 10px 24px rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+
+.activeMatch {
+  border: 2px solid #00ff99;
+  background: rgba(255, 255, 255, 0.18);
+  box-shadow:
+    0 10px 28px rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+.matchPhotoWrap {
+  width: 72px;
+  height: 72px;
+  margin: 2px 0 12px 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.matchPhoto {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  flex-shrink: 0;
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.matchName {
+  min-height: 34px;
+  margin: 0 0 8px 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.15;
+  text-align: center;
+}
+
+.matchMeta {
+  padding-top: 6px;
+  color: rgba(255, 255, 255, 0.74);
+}
+
+.matchTagRow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+}
+
+.matchTag {
+  max-width: 100%;
+  min-height: 26px;
+  padding: 5px 10px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 10px;
+  line-height: 1.1;
+  text-align: center;
+  white-space: normal;
+  overflow-wrap: break-word;
+
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  color: #fff;
+}
+
+/* =========================
+   RIGHT PANEL
+========================= */
+
+.circleChatPanel {
+  border-radius: 32px;
+  padding: 18px;
+  display: flex;
+  width: 100%;
+  min-width: 0;
+}
+
+.chatPanelInner {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.18) 0%,
+    rgba(255, 255, 255, 0.08) 100%
+  );
+
+  backdrop-filter: blur(22px) saturate(180%);
+  -webkit-backdrop-filter: blur(22px) saturate(180%);
+
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 28px;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 8px 24px rgba(0, 0, 0, 0.18);
+
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.chatPanelTop {
+  margin-bottom: 18px;
+  flex-shrink: 0;
+}
+
+.chatLoading {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.chatMessages {
+  flex: 1;
+  min-height: 320px;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 22px;
+
+  padding: 20px;
+  margin-bottom: 18px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.chatPlaceholder {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1rem;
+}
+
+.chatBubbleWrap {
+  display: flex;
+  width: 100%;
+}
+
+.chatBubbleWrap.mine {
+  justify-content: flex-end;
+}
+
+.chatBubbleWrap.theirs {
+  justify-content: flex-start;
+}
+
+.chatBubble {
+  max-width: 72%;
+  padding: 12px 16px;
+  border-radius: 22px;
+  word-break: break-word;
+  line-height: 1.45;
+
+  box-shadow:
+    0 6px 18px rgba(0, 0, 0, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.chatBubble.mine {
+  background: linear-gradient(180deg, #39d353 0%, #24b33f 100%);
+  color: #ffffff;
+  border-bottom-right-radius: 8px;
+}
+
+.chatBubble.theirs {
+  background: linear-gradient(180deg, rgba(58, 58, 62, 0.96) 0%, rgba(44, 44, 46, 0.96) 100%);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom-left-radius: 8px;
+}
+
+/* =========================
+   CHAT INPUT
+========================= */
+
+.chatInputRow {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-top: 14px;
+  padding-top: 12px;
+  flex-shrink: 0;
+}
+
+.chatInput {
+  flex: 1;
+  height: 58px;
+  min-height: 48px;
+  border: none;
+  border-radius: 24px;
+  padding: 0 18px;
+  font-size: 15px;
+  outline: none;
+  background: rgba(255, 255, 255, 0.14);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.chatInput:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.34);
+  box-shadow:
+    0 0 0 3px rgba(255, 255, 255, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+
+.chatInput::placeholder {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.chatSendBtn {
+  height: 58px;
+  min-width: 110px;
+  min-height: 48px;
+  padding: 0 22px;
+  border: none;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.16);
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+
+  box-shadow:
+    0 6px 18px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+
+  transition: transform 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+}
+
+.chatSendBtn:hover {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.chatInput:disabled,
+.chatSendBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.chatSendBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* =========================
+   SCROLLBARS
+========================= */
+
+.matchList::-webkit-scrollbar,
+.chatMessages::-webkit-scrollbar {
+  width: 10px;
+}
+
+.matchList::-webkit-scrollbar-track,
+.chatMessages::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.matchList::-webkit-scrollbar-thumb,
+.chatMessages::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 1100px) {
+  .matchList {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1000px) {
+  .circleLayoutTwoColumn {
+    grid-template-columns: 1fr;
+  }
+
+  .circleChatPanel,
+  .matchesPanel {
+    height: auto;
+    min-height: auto;
+    max-height: none;
+  }
+}
+
+@media (max-width: 900px) {
+  body#home.circlePage main {
+    padding: 20px 14px 60px;
+  }
+
+  body#home.circlePage .circleLayout {
+    width: 100%;
+  }
+
+  .circleFilterRow {
+    grid-template-columns: 1fr;
+  }
+
+  .circleHeaderRow {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 700px) {
+  .matchList {
+    grid-template-columns: 1fr;
+  }
 }
