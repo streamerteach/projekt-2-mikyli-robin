@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once "db.php";
+include_once __DIR__ . "/visitor_counter.php";
 
 if (empty($_SESSION["logged_in"]) || empty($_SESSION["email"])) {
   header("Location: index.php");
@@ -219,7 +220,7 @@ if ($candidate) {
 <footer>
   <p>&copy; <?php echo date("Y"); ?> VerifiedCircle. All rights reserved.</p>
     <?php
-    $visitorData = handleVisitor($email, $users);
+    $visitorData = handleVisitor($email, $currentUser);
     echo "Site Visitors: " . $visitorData['unique_visitors'];
     ?><br>
     <?php
